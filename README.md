@@ -2,7 +2,7 @@
 
 **Sistem Intelijen Antisipasi Gangguan Napas** · by 2 Epochs
 
-Dashboard untuk melihat seberapa besar polusi udara PM2.5 menambah rawat inap ISPA pada balita dan lansia, di wilayah mana, pada bulan apa, dan apa yang sebaiknya disiapkan lebih dulu. Dibuat untuk Dashboard Analysis Gelar Rasa 2026.
+Dashboard untuk melihat seberapa besar polusi udara PM2.5 menambah rawat inap ISPA pada balita dan lansia, di wilayah mana, pada bulan apa, dan apa yang sebaiknya disiapkan lebih dulu. 
 
 Demo: https://sigap-napas.vercel.app
 
