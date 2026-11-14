@@ -1,0 +1,129 @@
+station,rule,rows,note
+BGL-01,R0 raw rows,24432,
+BGL-01,R2 clock drift snapped,24432,max offset 0 days 00:02:10
+BGL-01,R5 non-VALID qc rows,125,{'SUSPECT': 125}
+BGL-01,R* final VALID hours,24307,of 24432 grid hours
+BGR-01,R0 raw rows,24432,
+BGR-01,R5 non-VALID qc rows,744,"{'SUSPECT': 488, 'CALIBRATING': 256}"
+BGR-01,R* final VALID hours,23688,of 24432 grid hours
+BGR-02,R0 raw rows,24432,
+BGR-02,R5 non-VALID qc rows,737,"{'SUSPECT': 484, 'CALIBRATING': 253}"
+BGR-02,R* final VALID hours,23695,of 24432 grid hours
+BJB-01,R0 raw rows,24432,
+BJB-01,R2 clock drift snapped,24432,max offset 0 days 00:01:15.420000
+BJB-01,R4 unit converted ppm->µg/m³,24432,PM x1000 (mg/m³); gas x MW*1000/24.45
+BJB-01,R5 non-VALID qc rows,0,{}
+BJB-01,R8 stuck/flatline sensor (VALID flag overridden),7329,"2024-09-07 to 2025-07-09; values [np.float64(3.5), np.float64(336.7)]"
+BJB-01,R* final VALID hours,17103,of 24432 grid hours
+BTM-01,R0 raw rows,24432,
+BTM-01,R2 clock drift snapped,24432,max offset 0 days 00:11:44.900000
+BTM-01,R5 non-VALID qc rows,154,{'SUSPECT': 154}
+BTM-01,R* final VALID hours,24278,of 24432 grid hours
+IDP-01,R0 raw rows,24432,
+IDP-01,R5 non-VALID qc rows,110,{'SUSPECT': 110}
+IDP-01,R* final VALID hours,24322,of 24432 grid hours
+JKT-01,R0 raw rows,24432,
+JKT-01,R5 non-VALID qc rows,978,"{'SUSPECT': 611, 'CALIBRATING': 367}"
+JKT-01,R* final VALID hours,23454,of 24432 grid hours
+JKT-02,R0 raw rows,24432,
+JKT-02,R5 non-VALID qc rows,952,"{'SUSPECT': 609, 'CALIBRATING': 343}"
+JKT-02,R* final VALID hours,23480,of 24432 grid hours
+JKT-03,R0 raw rows,24432,
+JKT-03,R5 non-VALID qc rows,962,"{'SUSPECT': 596, 'CALIBRATING': 366}"
+JKT-03,R* final VALID hours,23470,of 24432 grid hours
+JMB-01,R0 raw rows,24432,
+JMB-01,R2 clock drift snapped,24432,max offset 0 days 00:04:29.500000
+JMB-01,R5 non-VALID qc rows,168,{'SUSPECT': 168}
+JMB-01,R* final VALID hours,24264,of 24432 grid hours
+JMB-02,R0 raw rows,24432,
+JMB-02,R0 error strings in value cells,8986,"0xDEADBEEF, ERR_COMM_TIMEOUT, #VALUE!, ..."
+JMB-02,R1 timestamp outside period,132,[1970]
+JMB-02,R2 clock drift snapped,24300,max offset 0 days 00:05:12.100000
+JMB-02,R3 sub-hourly rows,92,15-min windows
+JMB-02,R3 hours rebuilt from 15-min mean,0,
+JMB-02,R5 non-VALID qc rows,24087,"{'PARSER_FAIL': 3599, 'FATAL_ERR': 3516, 'GARBAGE': 3505, 'COMM_LOST': 3407, 'CORRUPT': 3392, 'SENSOR_DEAD': 3351, 'SUSPECT': 3317}"
+JMB-02,R6 out of physical range pm25,13237,"[0,1500]"
+JMB-02,R6 out of physical range pm10,8378,"[0,2000]"
+JMB-02,R6 out of physical range so2,13266,"[0,2000]"
+JMB-02,R6 out of physical range co,13149,"[0,60000]"
+JMB-02,R6 out of physical range o3,13223,"[0,1000]"
+JMB-02,R6 out of physical range no2,13263,"[0,2000]"
+JMB-02,R6 out of physical range temperature_c,20281,"[5,45]"
+JMB-02,R6 out of physical range humidity_pct,18087,"[0,100]"
+JMB-02,R6 out of physical range wind_speed_ms,20310,"[0,40]"
+JMB-02,R6 out of physical range wind_direction_deg,23993,"[0,360]"
+JMB-02,R7 hours absent from file,224,
+JMB-02,R* final VALID hours,121,of 24432 grid hours
+KTB-01,R0 raw rows,24432,
+KTB-01,R2 clock drift snapped,24432,max offset 0 days 00:01:14.250000
+KTB-01,R5 non-VALID qc rows,127,{'SUSPECT': 127}
+KTB-01,R* final VALID hours,24305,of 24432 grid hours
+KTG-01,R0 raw rows,24432,
+KTG-01,R5 non-VALID qc rows,926,"{'SUSPECT': 594, 'CALIBRATING': 332}"
+KTG-01,R6 out of physical range pm25,2,"[0,1500]"
+KTG-01,R6 out of physical range pm10,1,"[0,2000]"
+KTG-01,R* final VALID hours,23504,of 24432 grid hours
+KTG-02,R0 raw rows,24432,
+KTG-02,R5 non-VALID qc rows,908,"{'SUSPECT': 570, 'CALIBRATING': 338}"
+KTG-02,R6 out of physical range pm25,2,"[0,1500]"
+KTG-02,R* final VALID hours,23522,of 24432 grid hours
+MDN-01,R0 raw rows,20800,
+MDN-01,R2 clock drift snapped,20800,max offset 0 days 00:04:18.250000
+MDN-01,R4 unit converted ppm->µg/m³,20800,PM x1000 (mg/m³); gas x MW*1000/24.45
+MDN-01,R5 non-VALID qc rows,4160,"{'SUSPECT': 1664, 'CALIBRATING': 1040, 'WARMUP': 832, 'MAINTENANCE': 624}"
+MDN-01,R7 hours absent from file,3632,
+MDN-01,R* final VALID hours,16640,of 24432 grid hours
+MER-01,R0 raw rows,24432,
+MER-01,R2 clock drift snapped,24432,max offset 0 days 00:05:12.100000
+MER-01,R5 non-VALID qc rows,19541,"{'MISSING': 8539, 'SUSPECT': 4887, 'CALIBRATING': 2448, 'WARMUP': 2443, 'MAINTENANCE': 1224}"
+MER-01,R6 out of physical range pm25,1780,"[0,1500]"
+MER-01,R6 out of physical range so2,1780,"[0,2000]"
+MER-01,R6 out of physical range temperature_c,749,"[5,45]"
+MER-01,R* final VALID hours,4891,of 24432 grid hours
+MLG-01,R0 raw rows,24432,
+MLG-01,R2 clock drift snapped,24432,max offset 0 days 00:01:49.800000
+MLG-01,R5 non-VALID qc rows,141,{'SUSPECT': 141}
+MLG-01,R* final VALID hours,24291,of 24432 grid hours
+MRS-01,R0 raw rows,24432,
+MRS-01,R2 clock drift snapped,24432,max offset 0 days 00:04:18.600000
+MRS-01,R5 non-VALID qc rows,167,{'SUSPECT': 167}
+MRS-01,R* final VALID hours,24265,of 24432 grid hours
+PKN-01,R0 raw rows,24432,
+PKN-01,R2 clock drift snapped,24432,max offset 0 days 00:01:14.200000
+PKN-01,R5 non-VALID qc rows,146,{'SUSPECT': 146}
+PKN-01,R* final VALID hours,24286,of 24432 grid hours
+PKU-01,R0 raw rows,24432,
+PKU-01,R2 clock drift snapped,24432,max offset 0 days 00:00:00.120000
+PKU-01,R5 non-VALID qc rows,132,{'SUSPECT': 132}
+PKU-01,R* final VALID hours,24300,of 24432 grid hours
+PLB-01,R0 raw rows,36381,
+PLB-01,R2 clock drift snapped,11949,max offset 0 days 00:30:00
+PLB-01,R3 sub-hourly rows,15933,15-min windows
+PLB-01,R3 hours rebuilt from 15-min mean,3940,
+PLB-01,R5 non-VALID qc rows,4957,"{'MISSING': 2819, 'SUSPECT': 1227, 'CALIBRATING': 911}"
+PLB-01,R7 hours absent from file,44,
+PLB-01,R* final VALID hours,19431,of 24432 grid hours
+PLU-01,R0 raw rows,24432,
+PLU-01,R2 clock drift snapped,24432,max offset 0 days 00:00:40.150000
+PLU-01,R5 non-VALID qc rows,142,{'SUSPECT': 142}
+PLU-01,R* final VALID hours,24290,of 24432 grid hours
+PSW-01,R0 raw rows,24432,
+PSW-01,R2 clock drift snapped,24432,max offset 0 days 00:03:45.350000
+PSW-01,R4 unit converted ppm->µg/m³,24432,PM x1000 (mg/m³); gas x MW*1000/24.45
+PSW-01,R5 non-VALID qc rows,138,{'SUSPECT': 138}
+PSW-01,R* final VALID hours,24294,of 24432 grid hours
+SM2-01,R0 raw rows,24432,
+SM2-01,R2 clock drift snapped,24432,max offset 0 days 00:02:40.180000
+SM2-01,R5 non-VALID qc rows,3665,"{'SUSPECT': 1710, 'CALIBRATING': 733, 'MAINTENANCE': 733, 'WARMUP': 489}"
+SM2-01,R* final VALID hours,20767,of 24432 grid hours
+SRG-01,R0 raw rows,24432,
+SRG-01,R2 clock drift snapped,24432,max offset 0 days 00:11:22.750000
+SRG-01,R5 non-VALID qc rows,155,{'SUSPECT': 155}
+SRG-01,R* final VALID hours,24277,of 24432 grid hours
+STG-01,R0 raw rows,24432,
+STG-01,R2 clock drift snapped,24432,max offset 0 days 00:02:45.600000
+STG-01,R5 non-VALID qc rows,133,{'SUSPECT': 133}
+STG-01,R* final VALID hours,24299,of 24432 grid hours
+YKY-01,R0 raw rows,24432,
+YKY-01,R5 non-VALID qc rows,141,{'SUSPECT': 141}
+YKY-01,R* final VALID hours,24291,of 24432 grid hours

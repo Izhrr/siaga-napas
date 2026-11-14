@@ -1,0 +1,35 @@
+province_geo,province_name,n_stations,island
+NUSATENGGARA BARAT,Nusa Tenggara Barat,0,
+GORONTALO,Gorontalo,0,
+SULAWESI TENGGARA,Sulawesi Tenggara,0,
+DAERAH ISTIMEWA YOGYAKARTA,DI Yogyakarta,1,Jawa
+JAWA TENGAH,Jawa Tengah,0,
+BANTEN,Banten,0,
+JAWA TIMUR,Jawa Timur,1,Jawa
+MALUKU UTARA,Maluku Utara,0,
+MALUKU,Maluku,0,
+SULAWESI SELATAN,Sulawesi Selatan,1,Sulawesi
+DKI JAKARTA,DKI Jakarta,3,Jawa
+JAWA BARAT,Jawa Barat,2,Jawa
+PAPUA,Papua (incl. Papua Selatan),1,Papua
+NUSA TENGGARA TIMUR,Nusa Tenggara Timur,0,
+BALI,Bali,0,
+RIAU,Riau,1,Sumatra
+KEPULAUAN RIAU,Kepulauan Riau,1,Sumatra
+SULAWESI BARAT,Sulawesi Barat,0,
+SULAWESI TENGAH,Sulawesi Tengah,1,Sulawesi
+SULAWESI UTARA,Sulawesi Utara,0,
+PAPUA BARAT,Papua Barat (incl. Papua Barat Daya),1,Papua
+SUMATERA UTARA,Sumatera Utara,1,Sumatra
+BANGKA BELITUNG,Bangka Belitung,0,
+SUMATERA BARAT,Sumatera Barat,1,Sumatra
+SUMATERA SELATAN,Sumatera Selatan,1,Sumatra
+JAMBI,Jambi,2,Sumatra
+LAMPUNG,Lampung,1,Sumatra
+BENGKULU,Bengkulu,1,Sumatra
+DI. ACEH,Aceh,1,Sumatra
+KALIMANTAN BARAT,Kalimantan Barat,1,Kalimantan
+KALIMANTAN TENGAH,Kalimantan Tengah,3,Kalimantan
+KALIMANTAN SELATAN,Kalimantan Selatan,1,Kalimantan
+KALIMANTAN TIMUR,Kalimantan Timur,1,Kalimantan
+KALIMANTAN UTARA,Kalimantan Utara,0,

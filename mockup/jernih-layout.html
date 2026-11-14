@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JERNIH · Dashboard Udara &amp; Kesehatan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+<style>
+/* Design read: dashboard keputusan untuk tim surveilans kesehatan lingkungan dan juri.
+   Bahasa visual mengikuti Previous Winner (Dashboard 2): panel filter merah di kiri, header grafik berlatar merah,
+   kartu putih padat dengan ornamen tematik samar. Dial ENERGY 2 / RHYTHM 2 / MOTION 2.
+   Kanvas desain 1440 px diskalakan ke layar, jadi tidak ada elemen yang lewat batas. */
+:root{
+  color-scheme:light;
+  --bg:#ECEEF2; --card:#FFFFFF; --line:#E1E4EA; --line2:#EEF0F3;
+  --ink:#1F2328; --ink2:#454B54; --muted:#5D636D;
+  --red:#C62828; --red-side:#B71C1C; --red-tint:#FDECEA; --red-ink:#B3261E; --side-ink:#FDE9E7;
+  --bar:#D32F2F; --bar-soft:#F0A39D; --bar-gray:#B4B9C1; --trend:#2E3238;
+  --a-ekstrem:#a3213a; --a-gambut:#e4572e; --a-kronis:#6b4fb8; --a-bersih:#1f9e89; --a-none:#9AA0A8;
+  --s1:#FDE4E1; --s2:#F8B4AB; --s3:#EF7A6D; --s4:#D93D31; --s5:#A51D17; --s6:#5C0D0A;
+  --hatch:#C9CDD3; --land:#F4F5F7; --good:#1E7F4E; --thr:#E0A100; --ins-bg:#FFF4D6; --ins-ink:#3D2E00; --ins-key:#8A5A00; --ins-line:#F3DFA2;
+  --shadow:0 6px 16px -10px rgba(60,20,20,.28);
+  --orn:#C62828; --orn-op:.07;
+  --font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --bg:#111318; --card:#1B1E26; --line:#2C313C; --line2:#262A34; --ink:#ECEDEF; --ink2:#C5C9D0; --muted:#A2A8B2;
+  --red:#B3261E; --red-side:#7F1612; --red-tint:#3A1F1E; --red-ink:#FF8A80;
+  --bar:#E5534B; --bar-soft:#8A403B; --bar-gray:#5B626E; --trend:#E3E5E9;
+  --a-ekstrem:#b94a8a; --a-gambut:#e0702e; --a-kronis:#7f86ea; --a-bersih:#25a28c;
+  --s1:#3B2526; --s2:#6B2F2C; --s3:#A63A32; --s4:#E0523F; --s5:#F58B74; --s6:#FFC9BD; --hatch:#3A3F4A; --land:#22262F;
+  --shadow:0 6px 16px -10px rgba(0,0,0,.7); --orn:#FFFFFF; --orn-op:.06; --ins-bg:#33291A; --ins-ink:#F3E6C4; --ins-key:#F5C451; --ins-line:#4A3B22;}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#111318; --card:#1B1E26; --line:#2C313C; --line2:#262A34; --ink:#ECEDEF; --ink2:#C5C9D0; --muted:#A2A8B2;
+  --red:#B3261E; --red-side:#7F1612; --red-tint:#3A1F1E; --red-ink:#FF8A80;
+  --bar:#E5534B; --bar-soft:#8A403B; --bar-gray:#5B626E; --trend:#E3E5E9;
+  --a-ekstrem:#b94a8a; --a-gambut:#e0702e; --a-kronis:#7f86ea; --a-bersih:#25a28c;
+  --s1:#3B2526; --s2:#6B2F2C; --s3:#A63A32; --s4:#E0523F; --s5:#F58B74; --s6:#FFC9BD; --hatch:#3A3F4A; --land:#22262F;
+  --shadow:0 6px 16px -10px rgba(0,0,0,.7); --orn:#FFFFFF; --orn-op:.06; --ins-bg:#33291A; --ins-ink:#F3E6C4; --ins-key:#F5C451; --ins-line:#4A3B22;}
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg)}
+body{color:var(--ink);font-family:var(--font);font-size:12.5px;line-height:1.4;font-variant-numeric:tabular-nums;overflow:hidden}
+a,button,select,label,input[type=range],[role=button]{cursor:pointer}
+:focus-visible{outline:2px solid #F9A825;outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.orn{position:absolute;pointer-events:none;color:var(--orn);opacity:var(--orn-op)}
+
+#stage{position:absolute;top:0;left:0;width:1440px;transform-origin:0 0;display:grid;grid-template-columns:228px 1fr}
+/* ---------- sidebar ---------- */
+.side{position:relative;overflow:visible;z-index:5;background:var(--red-side);color:var(--side-ink);display:flex;flex-direction:column;padding:14px 14px 14px;gap:10px;min-height:0}
+.side-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.side-bg .orn{right:-46px;bottom:70px;width:210px;height:210px;color:#fff;opacity:.08}
+.dd{position:relative}
+.dd summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:6px;background:#fff;color:#1F2328;border-radius:8px;padding:6px 10px;font:600 11.5px var(--font)}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary::after{content:'';width:7px;height:7px;border-right:2px solid #5D636D;border-bottom:2px solid #5D636D;transform:rotate(45deg) translateY(-2px);transition:transform .2s;flex:none}
+.dd[open] summary::after{transform:rotate(225deg) translateY(-2px)}
+.dd summary span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;color:#1F2328;border-radius:10px;box-shadow:0 14px 30px -10px rgba(0,0,0,.45);padding:6px;max-height:300px;overflow:auto}
+.menu label{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;font:500 12px var(--font)}
+.menu label:hover{background:#FDECEA}
+.menu input{accent-color:#C62828;width:14px;height:14px;margin:0}
+.menu .all{font-weight:700;border-bottom:1px solid #EEF0F3;border-radius:6px 6px 0 0;margin-bottom:2px}
+.menu .grid3{display:grid;grid-template-columns:repeat(3,1fr)}
+.menu .pre{display:flex;gap:4px;padding:2px 2px 6px;border-bottom:1px solid #EEF0F3;margin-bottom:2px}
+.menu .pre button{flex:1;border:1px solid #E1E4EA;background:#fff;border-radius:6px;font:600 10.5px var(--font);padding:4px 0;color:#454B54}
+.menu .pre button:hover{border-color:#C62828;color:#B3261E}
+.menu i.sw{width:9px;height:9px}
+
+.brand{display:flex;gap:10px;align-items:center;position:relative}
+.logo{width:44px;height:44px;flex:none;border-radius:10px;background:#fff;color:#7A1A16;display:grid;place-items:center;font:800 9px var(--font);overflow:hidden;box-shadow:0 4px 10px -4px rgba(0,0,0,.4)}
+.logo img{width:100%;height:100%;object-fit:contain}
+.brand b{display:block;font-size:18px;letter-spacing:.03em;color:#fff;line-height:1.1}
+.brand small{display:block;font-size:9.5px;line-height:1.3;color:#fff;opacity:.9}
+.sec-l{font:700 10px var(--font);letter-spacing:.06em;text-transform:uppercase;color:#fff;opacity:.9;margin:0 0 5px;display:flex;justify-content:space-between;align-items:center}
+.nav{position:relative;display:flex;flex-direction:column;gap:1px}
+.nav .ind{position:absolute;left:0;right:0;top:0;height:30px;border-radius:8px;background:#fff;transition:transform .32s cubic-bezier(.2,.8,.2,1);z-index:0;box-shadow:0 4px 10px -6px rgba(0,0,0,.45)}
+.nav a{position:relative;z-index:1;display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border-radius:8px;color:#fff;text-decoration:none;font-weight:600;font-size:12.5px;transition:color .2s}
+.nav a span{font-weight:800;font-size:10.5px;width:18px;opacity:.7}
+.nav a:hover:not([aria-current]){background:rgba(255,255,255,.1)}
+.nav a[aria-current="page"]{color:var(--red-ink)}
+.nav a[aria-current="page"] span{opacity:1}
+.filters{position:relative;display:flex;flex-direction:column;gap:7px;padding:9px;border-radius:10px;background:rgba(0,0,0,.18)}
+.fg-l{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;font-weight:700;color:#fff;margin-bottom:3px}
+.fg-l button{background:none;border:0;color:#fff;opacity:.85;font:600 10px var(--font);padding:0;text-decoration:underline}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips.m6{display:grid;grid-template-columns:repeat(6,1fr)}
+.chips.g2{display:grid;grid-template-columns:1fr 1fr}
+.chips.g2 .chk span{justify-content:flex-start}
+.chk{position:relative;display:inline-flex}
+.chk input{position:absolute;opacity:0;width:1px;height:1px}
+.chk span{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:0;padding:3px 7px;border-radius:6px;background:rgba(255,255,255,.14);color:#fff;font:600 10.5px var(--font);border:1px solid transparent;transition:background .15s,color .15s;white-space:nowrap;width:100%}
+.chk:hover span{background:rgba(255,255,255,.24)}
+.chk input:checked + span{background:#fff;color:var(--red-ink)}
+.chk input:checked + span::before{content:"✓";font-weight:800;font-size:9.5px}
+.chips.m6 .chk span{padding:3px 0}
+.chips.m6 .chk input:checked + span::before{content:none}
+.chk input:focus-visible + span{outline:2px solid #F9A825;outline-offset:1px}
+.chk i{width:8px;height:8px;border-radius:2px;display:inline-block;flex:none}
+.presets{display:flex;gap:4px;margin-bottom:4px}
+.presets button{flex:1;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font:600 10px var(--font);border-radius:6px;padding:3px 0;white-space:nowrap}
+.presets button[aria-pressed="true"]{background:rgba(255,255,255,.22);border-color:#fff}
+.seg{display:flex;background:rgba(255,255,255,.16);border-radius:7px;padding:2px;gap:2px}
+.seg button{flex:1;border:0;background:transparent;color:#fff;font:700 12px var(--font);padding:3px 0;border-radius:5px;line-height:1.1}
+.seg button small{display:block;font-size:9px;font-weight:600;opacity:.9}
+.seg button[aria-checked="true"]{background:#fff;color:var(--red-ink)}
+.reset{align-self:stretch;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.35);color:#fff;font:600 11px var(--font);border-radius:7px;padding:5px 0}
+.reset:hover{background:rgba(255,255,255,.2)}
+.side-foot{margin-top:auto;display:grid;gap:6px;position:relative}
+.sbtn{border:1px solid rgba(255,255,255,.45);background:transparent;color:#fff;font:700 11.5px var(--font);border-radius:8px;padding:7px 6px}
+.sbtn:hover{background:rgba(255,255,255,.12)}
+.sbtn.main{background:#fff;color:var(--red-ink);border-color:#fff;box-shadow:0 4px 12px -6px rgba(0,0,0,.5)}
+.sbtn.main:hover{background:#FDE9E7}
+
+/* ---------- main ---------- */
+main{position:relative;display:flex;flex-direction:column;gap:10px;padding:12px 14px;min-width:0;min-height:0}
+.top{display:flex;align-items:center;gap:12px}
+h1{margin:0;font-size:21px;font-weight:800;color:var(--red-ink);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+h1 span{font-weight:500;color:var(--ink)}
+.stamp{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
+.btn{border:1px solid var(--red);background:var(--card);color:var(--red-ink);font:700 11.5px var(--font);border-radius:8px;padding:6px 11px;white-space:nowrap}
+.btn:hover{background:var(--red-tint)}
+.banner{display:flex;gap:10px;align-items:center;background:var(--red-tint);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--ink);box-shadow:var(--shadow)}
+.banner svg{flex:none}
+.banner b{color:var(--red-ink)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi{position:relative;overflow:hidden;background:var(--card);border-radius:10px;padding:9px 12px;box-shadow:var(--shadow);min-width:0;border:1px solid var(--line)}
+.kpi .orn{right:4px;bottom:2px;width:62px;height:62px}
+.kpi .l{position:relative;font-size:11px;font-weight:700;color:var(--red-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v{position:relative;font-size:25px;font-weight:800;letter-spacing:-.02em;line-height:1.15;white-space:nowrap}
+.kpi .v small{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:4px}
+.kpi .d{position:relative;font-size:10.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:82%}
+.kpi .d b.up{color:var(--red-ink)} .kpi .d b.down{color:var(--good)}
+
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:1fr 1fr;gap:10px}
+.page{display:none}
+.page.on{display:contents}
+.card{position:relative;background:var(--card);border-radius:10px;box-shadow:var(--shadow);border:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.card-h{display:flex;align-items:center;gap:8px;background:var(--red);color:#fff;padding:6px 10px;min-height:30px}
+.card-h h2{margin:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-h .tools{margin-left:auto;display:flex;gap:5px;align-items:center}
+.info{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);background:transparent;color:#fff;font:800 10px var(--font);display:grid;place-items:center;padding:0;flex:none}
+.info:hover{background:rgba(255,255,255,.2)}
+.pills{display:flex;gap:2px;background:rgba(0,0,0,.2);border-radius:7px;padding:2px}
+.pills button{border:0;background:transparent;color:#fff;font:700 10px var(--font);padding:3px 7px;border-radius:5px}
+.pills button[aria-pressed="true"]{background:#fff;color:var(--red-ink)}
+.card-s{margin:5px 10px 0;font-size:10.5px;font-style:italic;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chart{flex:1;min-height:0;position:relative;margin:2px 8px 0}
+.chart svg{display:block;width:100%;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:10.5px;color:var(--ink2);margin:3px 10px 0}
+.legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
+.sw.ln{height:3px}
+.sw.dot{border-radius:50%}
+.ins{margin:6px 0 0;padding:6px 10px 7px;background:var(--ins-bg);color:var(--ins-ink);font-size:11px;font-weight:500;line-height:1.35;border-top:1px solid var(--ins-line)}
+.ins b{color:var(--ins-key);font-weight:800}
+.ins:empty{display:none}
+/* Poin Kunci: angka besar + headline, klik untuk detail (bukan grafik, jadi tampil beda: latar merah muda) */
+.tr-card{background:var(--red-tint)}
+.tr-card .card-h{background:var(--red-side)}
+.tr-card .card-h small{margin-left:auto;font-size:10px;font-weight:600;opacity:.9}
+.tr-card > .orn{right:4px;bottom:4px;width:104px;height:104px}
+.kp{position:relative;list-style:none;margin:0;padding:4px 8px 6px;flex:1;min-height:0;display:flex;flex-direction:column}
+.kp li{flex:1;min-height:0;display:flex}
+.kp li + li{border-top:1px solid rgba(198,40,40,.18)}
+.kp button{flex:1;display:grid;grid-template-columns:78px 1fr 12px;align-items:center;gap:8px;text-align:left;background:none;border:0;border-radius:8px;padding:2px 6px;color:var(--ink);font-family:var(--font)}
+.kp button:hover{background:var(--card)}
+.kp .fig{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--red-ink);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kp .hd{font-size:12px;font-weight:700;line-height:1.28}
+.kp .ac{display:block;font-size:10.5px;font-weight:500;color:var(--ink2);margin-top:1px;line-height:1.3}
+.kp .chev{color:var(--red-ink);font-weight:800;font-size:15px}
+#kp{width:min(540px,94vw)}
+#kp .kp-body{padding:16px 22px 20px}
+#kp .big{font-size:40px;font-weight:800;color:var(--red-ink);letter-spacing:-.02em;line-height:1}
+#kp .sub{font-size:14px;font-weight:700;margin:4px 0 12px}
+#kp dl{margin:0;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:12.5px}
+#kp dt{font-weight:700;color:var(--red-ink)}
+#kp dd{margin:0;color:var(--ink2);line-height:1.5}
+#kp .go{margin-top:16px}
+.back{background:none;border:1px solid rgba(255,255,255,.7);color:#fff;font:700 10px var(--font);border-radius:6px;padding:3px 7px}
+.empty{display:grid;place-items:center;height:100%;color:var(--muted);font-size:11.5px;text-align:center;padding:10px}
+table.t{width:100%;border-collapse:collapse;font-size:11px}
+table.t th{background:var(--red-tint);color:var(--red-ink);text-align:left;font-weight:700;padding:5px 7px;position:sticky;top:0}
+table.t td{padding:5px 7px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink2)}
+table.t td b{color:var(--ink)}
+.tag{display:inline-block;font-weight:700;font-size:10px;border-radius:5px;padding:1px 6px;background:var(--red-tint);color:var(--red-ink);white-space:nowrap}
+.tag.g{background:var(--line2);color:var(--ink2)}
+.range{display:flex;align-items:center;gap:6px;font-size:10.5px;color:#fff}
+.range input{accent-color:#fff;width:90px}
+
+.axis text{fill:var(--muted);font-size:10px;font-family:var(--font)}
+.gl{stroke:var(--line);stroke-width:1}
+.std55{stroke:var(--ink2);stroke-dasharray:5 4;stroke-width:1.2}
+.thr25{stroke:var(--thr);stroke-width:1.6}
+.lab{font-size:10.5px;fill:var(--ink2);font-weight:600;font-family:var(--font)}
+.lab-b{font-size:10.5px;fill:var(--ink);font-weight:700;font-family:var(--font)}
+.halo{paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.prov{stroke:var(--card);stroke-width:.8;transition:fill .35s}
+.prov:hover{stroke:var(--ink);stroke-width:1.4}
+.prov.sel{stroke:var(--ink);stroke-width:2.2}
+
+.tip{position:fixed;pointer-events:none;background:rgba(24,27,33,.96);color:#fff;font-size:11.5px;border-radius:8px;padding:7px 10px;max-width:280px;z-index:60;opacity:0;transition:opacity .12s;font-family:var(--font)}
+.tip .row{display:flex;gap:12px;justify-content:space-between}
+
+.fade{animation:rise .38s cubic-bezier(.2,.8,.2,1) both}
+.page.on .card:nth-child(2){animation-delay:.04s}.page.on .card:nth-child(3){animation-delay:.08s}.page.on .card:nth-child(4){animation-delay:.12s}.page.on .card:nth-child(5){animation-delay:.16s}.page.on .card:nth-child(6){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(420px,100vw);background:var(--card);border-left:1px solid var(--line);box-shadow:-20px 0 40px -30px rgba(0,0,0,.5);transform:translateX(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:50;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--red);color:#fff}
+.dr-h h2{font-size:14px;margin:0}
+.x{margin-left:auto;border:1px solid rgba(255,255,255,.6);background:transparent;color:#fff;border-radius:8px;width:30px;height:30px;font-size:16px}
+.dr-tools{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 10px;font:600 11px var(--font);color:var(--ink2)}
+.chip:hover{border-color:var(--red);color:var(--red-ink)}
+.log{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.bub{align-self:flex-end;background:var(--red);color:#fff;border-radius:14px 14px 4px 14px;padding:7px 11px;max-width:85%}
+.ans{border-left:3px solid var(--red);padding:2px 0 2px 10px}
+.ans h3{margin:0 0 3px;font-size:13.5px}
+.ans p{margin:0 0 6px;color:var(--ink2)}
+.ans .meta{font-size:10.5px;color:var(--muted)}
+.dr-f{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
+.dr-f input{flex:1;font:500 12.5px var(--font);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.dr-f button{border:0;background:var(--red);color:#fff;font:700 12px var(--font);border-radius:8px;padding:0 14px}
+
+dialog{border:0;border-radius:14px;padding:0;overflow:hidden;width:min(940px,94vw);max-height:90vh;background:var(--card);color:var(--ink);box-shadow:0 30px 60px -24px rgba(10,20,40,.55)}
+dialog::backdrop{background:rgba(15,18,24,.55)}
+.dg-h{display:flex;align-items:center;gap:10px;background:var(--red);color:#fff;padding:12px 18px}
+.dg-h h2{margin:0;font-size:16px}
+.dg{display:grid;grid-template-columns:200px 1fr;max-height:calc(90vh - 54px)}
+.dg nav{border-right:1px solid var(--line);padding:12px 10px;display:flex;flex-direction:column;gap:1px;overflow:auto}
+.dg nav a{color:var(--ink2);text-decoration:none;font-weight:600;font-size:12px;padding:5px 8px;border-radius:6px}
+.dg nav a:hover{background:var(--red-tint);color:var(--red-ink)}
+.dg .body{padding:6px 24px 24px;overflow:auto}
+.dg h3{font-size:14.5px;margin:18px 0 4px;color:var(--red-ink)}
+.dg h4{font-size:12.5px;margin:10px 0 2px}
+.dg p,.dg li{color:var(--ink2);font-size:12.5px;line-height:1.5}
+.dg ul,.dg ol{padding-left:18px;margin:4px 0}
+.dg table{border-collapse:collapse;width:100%;font-size:12px;margin:4px 0}
+.dg td,.dg th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+.dg th{background:var(--red-tint);color:var(--red-ink)}
+
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.drawer,.nav .ind{transition:none}}
+body.mobile{overflow:auto}
+body.mobile #stage{position:static;width:auto;transform:none;grid-template-columns:1fr}
+body.mobile .nav{flex-direction:row;flex-wrap:wrap}
+body.mobile .nav .ind{display:none}
+body.mobile .nav a{height:44px}
+body.mobile .nav a[aria-current="page"]{background:#fff}
+body.mobile .chk span,body.mobile .seg button,body.mobile .presets button{min-height:36px}
+body.mobile .top{flex-wrap:wrap}
+body.mobile h1{white-space:normal}
+body.mobile .stamp{margin-left:0}
+body.mobile .kpis{grid-template-columns:1fr 1fr}
+body.mobile .grid{display:flex;flex-direction:column}
+body.mobile .card{min-height:320px}
+body.mobile .card.tr-card{min-height:0}
+body.mobile .dg{grid-template-columns:1fr}body.mobile .dg nav{display:none}
+</style>
+</head>
+<body>
+<!-- Ornamen tematik (dipakai samar di latar kartu): paru, rumah sakit, partikel, kalender, cerobong, menara sensor -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="o-lung" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v22M32 30c-3 3-6 4-9 4M32 30c3 3 6 4 9 4"/><path d="M24 20c-9 2-15 14-15 27 0 6 4 9 9 8 6-1 9-5 9-12V25c0-3-1-5-3-5z"/><path d="M40 20c9 2 15 14 15 27 0 6-4 9-9 8-6-1-9-5-9-12V25c0-3 1-5 3-5z"/></g></symbol>
+  <symbol id="o-hosp" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M8 56V24h48v32M4 56h56M22 24V10h20v14"/><path d="M32 13v8M28 17h8" stroke-linecap="round"/><path d="M16 32h6v6h-6zM42 32h6v6h-6zM16 44h6v6h-6zM42 44h6v6h-6zM28 40h8v16h-8z"/></g></symbol>
+  <symbol id="o-part" viewBox="0 0 64 64"><g fill="currentColor"><circle cx="14" cy="18" r="5"/><circle cx="30" cy="12" r="3"/><circle cx="46" cy="20" r="7"/><circle cx="22" cy="34" r="8"/><circle cx="42" cy="40" r="4"/><circle cx="54" cy="34" r="3"/><circle cx="12" cy="50" r="3"/><circle cx="30" cy="52" r="5"/><circle cx="50" cy="54" r="6"/></g></symbol>
+  <symbol id="o-cal" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><rect x="8" y="12" width="48" height="44" rx="5"/><path d="M8 24h48M20 6v12M44 6v12" stroke-linecap="round"/><path d="M16 32h8v7h-8zM28 32h8v7h-8zM40 32h8v7h-8zM16 44h8v7h-8zM28 44h8v7h-8z"/></g></symbol>
+  <symbol id="o-fact" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M6 58V34l14 8v-8l14 8v-8l14 8V18h10v40z"/><path d="M50 12c0-4 4-4 4-8M56 12c0-3 3-3 3-6" stroke-linecap="round"/></g></symbol>
+  <symbol id="o-tower" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 22 20 58M32 22l12 36M24 44h16M22 52h20"/><circle cx="32" cy="18" r="4"/><path d="M22 10a14 14 0 0 0 0 16M42 10a14 14 0 0 1 0 16M16 5a22 22 0 0 0 0 26M48 5a22 22 0 0 1 0 26"/></g></symbol>
+  <symbol id="o-wind" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M6 24h34a8 8 0 1 0-8-8M6 36h44a8 8 0 1 1-8 8M6 48h22"/></g></symbol>
+</defs></svg>
+
+<div id="stage">
+  <aside class="side" aria-label="Navigasi dan filter">
+    <div class="side-bg" aria-hidden="true"><svg class="orn"><use href="#o-part"/></svg></div>
+    <div class="brand">
+      <div class="logo" id="logo"><img src="../assets/brand/logo-gelar-rasa.png" alt="Logo Gelar Rasa 2026" width="44" height="44" onerror="this.remove();document.getElementById('logo').textContent='[LOGO]'"></div>
+      <div><b>JERNIH</b><small>Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi</small></div>
+    </div>
+    <nav aria-label="Halaman">
+      <div class="nav" id="nav"><div class="ind" id="ind" aria-hidden="true"></div>
+        <a href="#ringkasan" data-p="ringkasan"><span>01</span>Ringkasan</a>
+        <a href="#waktu" data-p="waktu"><span>02</span>Waktu &amp; Wilayah</a>
+        <a href="#pemicu" data-p="pemicu"><span>03</span>Pemicu Polusi</a>
+        <a href="#dampak" data-p="dampak"><span>04</span>Dampak Kesehatan</a>
+        <a href="#jaringan" data-p="jaringan"><span>05</span>Jaringan Pemantau</a>
+      </div>
+    </nav>
+    <section class="filters" aria-labelledby="fl">
+      <p class="sec-l" id="fl">Atur Filter <span id="fcount"></span></p>
+      <div class="f"><div class="fg-l">Tahun</div><details class="dd" data-k="years"><summary><span></span></summary><div class="menu"></div></details></div>
+      <div class="f"><div class="fg-l">Bulan</div><details class="dd" data-k="months"><summary><span></span></summary><div class="menu"></div></details></div>
+      <div class="f"><div class="fg-l">Pulau</div><details class="dd" data-k="islands"><summary><span></span></summary><div class="menu"></div></details></div>
+      <div class="f"><div class="fg-l">Tipe wilayah</div><details class="dd" data-k="archs"><summary><span></span></summary><div class="menu"></div></details></div>
+      <div class="f"><div class="fg-l">Acuan PM2.5</div><details class="dd" data-k="c0"><summary><span></span></summary><div class="menu"></div></details></div>
+      <fieldset style="border:0;padding:0;margin:0"><legend class="fg-l" style="width:100%">Kelompok rentan</legend><div class="chips" id="fGroup"></div></fieldset>
+      <button class="reset" type="button" id="btnReset">Atur ulang filter</button>
+    </section>
+    <div class="side-foot">
+      <button class="sbtn main" type="button" id="btnChat" aria-controls="drawer" aria-expanded="false">Tanya Data</button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="top">
+      <h1 id="title"></h1>
+      <span class="stamp">Data s.d. 14 Okt 2026 · diperbarui bulanan</span>
+      <button class="btn" type="button" id="btnGuide">Panduan</button>
+      <button class="btn" type="button" id="btnTheme">Mode gelap</button>
+    </header>
+    <div class="banner" role="note"><svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><path d="M10 1 19 17H1Z" fill="var(--red)"/><path d="M10 6.5v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14.2" r="1.2" fill="#fff"/></svg><div id="banner"></div></div>
+    <section class="kpis" id="kpis" aria-label="Angka utama"></section>
+    <div class="grid" id="grid">
+      <div class="page" data-page="ringkasan">
+        <section class="card fade" style="grid-column:1/8;grid-row:1"><div class="card-h"><h2>Persebaran Beban ISPA per Provinsi</h2><div class="tools"><div class="pills" id="mapMetric" role="group" aria-label="Metrik peta"><button type="button" data-v="af">% ISPA terkait</button><button type="button" data-v="pm">PM2.5</button><button type="button" data-v="exc">Hari &gt; 55</button></div><button class="info" type="button" data-tip="map" aria-label="Cara membaca peta">i</button></div></div>
+          <p class="card-s" id="mapSub"></p><div class="chart" id="cMap"></div><div class="legend" id="lgMap"></div><p class="ins" id="iMap"></p></section>
+        <section class="card fade" style="grid-column:8/13;grid-row:1"><div class="card-h"><h2>Tren Bulanan Kasus Berlebih</h2><div class="tools"><button class="info" type="button" data-tip="trend" aria-label="Cara membaca tren">i</button></div></div>
+          <p class="card-s" id="trendSub"></p><div class="chart" id="cTrend"></div><div class="legend" id="lgTrend"></div><p class="ins" id="iTrend"></p></section>
+        <section class="card fade" style="grid-column:1/5;grid-row:2"><div class="card-h"><h2>Kasus Berlebih per Level PM2.5</h2><div class="tools"><button class="info" type="button" data-tip="bands" aria-label="Cara membaca level PM2.5">i</button></div></div>
+          <p class="card-s">PM2.5 harian, µg/m³</p><div class="chart" id="cBands"></div><p class="ins" id="iBands"></p></section>
+        <section class="card fade" style="grid-column:5/9;grid-row:2"><div class="card-h"><h2>Peringkat Provinsi</h2><div class="tools"><button class="info" type="button" data-tip="rank" aria-label="Cara membaca peringkat">i</button></div></div>
+          <p class="card-s">Kasus berlebih per provinsi</p><div class="chart" id="cRank"></div><div class="legend" id="lgRank"></div><p class="ins" id="iRank"></p></section>
+        <section class="card tr-card fade" style="grid-column:9/13;grid-row:2" data-notes="ringkasan"></section>
+      </div>
+
+      <div class="page" data-page="waktu">
+        <section class="card fade" style="grid-column:1/7;grid-row:1/3"><div class="card-h"><h2>Kalender PM2.5 per Wilayah</h2><div class="tools"><button class="info" type="button" data-tip="heat" aria-label="Cara membaca kalender">i</button></div></div>
+          <p class="card-s">Rata-rata PM2.5 bulanan, µg/m³</p><div class="chart" id="cHeat"></div><div class="legend" id="lgHeat"></div><p class="ins" id="iHeat"></p></section>
+        <section class="card fade" style="grid-column:7/10;grid-row:1"><div class="card-h"><h2>Pola Musiman</h2><div class="tools"><button class="info" type="button" data-tip="season" aria-label="Cara membaca pola musiman">i</button></div></div>
+          <p class="card-s">PM2.5 per bulan, µg/m³</p><div class="chart" id="cSeason"></div><div class="legend" id="lgSeason"></div><p class="ins" id="iSeason"></p></section>
+        <section class="card fade" style="grid-column:10/13;grid-row:1"><div class="card-h"><h2>Musim Asap per Tahun</h2><div class="tools"><button class="info" type="button" data-tip="esc" aria-label="Cara membaca musim asap">i</button></div></div>
+          <p class="card-s">PM2.5 Agu–Okt, 6 wilayah terparah</p><div class="chart" id="cEsc"></div><div class="legend" id="lgEsc"></div><p class="ins" id="iEsc"></p></section>
+        <section class="card fade" style="grid-column:7/10;grid-row:2"><div class="card-h"><h2>Pola Jam Harian</h2><div class="tools"><button class="info" type="button" data-tip="diurnal" aria-label="Cara membaca pola jam">i</button></div></div>
+          <p class="card-s">PM2.5 per jam dibanding rata-rata harian</p><div class="chart" id="cDiurnal"></div><div class="legend" id="lgDiurnal"></div><p class="ins" id="iDiurnal"></p></section>
+        <section class="card tr-card fade" style="grid-column:10/13;grid-row:2" data-notes="waktu"></section>
+      </div>
+
+      <div class="page" data-page="pemicu">
+        <section class="card fade" style="grid-column:1/7;grid-row:1"><div class="card-h"><h2>Peta Tipe Wilayah</h2><div class="tools"><button class="info" type="button" data-tip="arch" aria-label="Cara membaca tipe wilayah">i</button></div></div>
+          <p class="card-s">Level dasar vs lonjakan musim asap</p><div class="chart" id="cArch"></div><div class="legend" id="lgArch"></div><p class="ins" id="iArch"></p></section>
+        <section class="card fade" style="grid-column:7/10;grid-row:1"><div class="card-h"><h2>Lalu Lintas vs PM2.5</h2><div class="tools"><button class="info" type="button" data-tip="traffic" aria-label="Cara membaca lalu lintas">i</button></div></div>
+          <p class="card-s">Kendaraan per jam vs PM2.5 dasar</p><div class="chart" id="cTraffic"></div><p class="ins" id="iTraffic"></p></section>
+        <section class="card fade" style="grid-column:10/13;grid-row:1"><div class="card-h"><h2>Level per Tipe Wilayah</h2><div class="tools"><button class="info" type="button" data-tip="archbar" aria-label="Cara membaca level per tipe">i</button></div></div>
+          <p class="card-s">PM2.5 Jan–Jun vs Agu–Okt</p><div class="chart" id="cArchBar"></div><div class="legend" id="lgArchBar"></div><p class="ins" id="iArchBar"></p></section>
+        <section class="card fade" style="grid-column:1/5;grid-row:2"><div class="card-h"><h2>Faktor Paling Berpengaruh</h2><div class="tools"><button class="info" type="button" data-tip="imp" aria-label="Cara membaca faktor">i</button></div></div>
+          <p class="card-s">Kontribusi tiap faktor terhadap PM2.5 harian</p><div class="chart" id="cImp"></div><p class="ins" id="iImp"></p></section>
+        <section class="card fade" style="grid-column:5/9;grid-row:2"><div class="card-h"><h2>Arah Angin dan PM2.5</h2><div class="tools"><div class="pills" id="windSt" role="group" aria-label="Pilih stasiun"><button type="button" data-v="PLB-01">PLB-01</button><button type="button" data-v="PKU-01">PKU-01</button><button type="button" data-v="JKT-02">JKT-02</button></div><button class="info" type="button" data-tip="wind" aria-label="Cara membaca arah angin">i</button></div></div>
+          <p class="card-s">PM2.5 menurut arah datang angin, µg/m³</p><div class="chart" id="cWind"></div><p class="ins" id="iWind"></p></section>
+        <section class="card tr-card fade" style="grid-column:9/13;grid-row:2" data-notes="pemicu"></section>
+      </div>
+
+      <div class="page" data-page="dampak">
+        <section class="card fade" style="grid-column:1/7;grid-row:1"><div class="card-h"><h2>Kurva Risiko Rawat Inap</h2><div class="tools"><div class="range"><label for="rC0">Skenario batas</label><input type="range" id="rC0" min="0" max="3" step="1" value="1"><output id="oC0" for="rC0">25</output></div><button class="info" type="button" data-tip="curve" aria-label="Cara membaca kurva">i</button></div></div>
+          <p class="card-s">Risiko dibanding hari dengan PM2.5 15 µg/m³</p><div class="chart" id="cCurve"></div><div class="legend" id="lgCurve"></div><p class="ins" id="iCurve"></p></section>
+        <section class="card fade" style="grid-column:7/10;grid-row:1"><div class="card-h"><h2>Kapan Pasien Datang</h2><div class="tools"><button class="info" type="button" data-tip="event" aria-label="Cara membaca waktu kedatangan">i</button></div></div>
+          <p class="card-s">Admisi sebelum dan sesudah lonjakan PM2.5</p><div class="chart" id="cEvent"></div><div class="legend" id="lgEvent"></div><p class="ins" id="iEvent"></p></section>
+        <section class="card fade" style="grid-column:10/13;grid-row:1"><div class="card-h"><h2>Kerentanan per Penyakit</h2><div class="tools"><button class="info" type="button" data-tip="pct" aria-label="Cara membaca kerentanan">i</button></div></div>
+          <p class="card-s">Kenaikan kasus bila PM2.5 berlipat dua</p><div class="chart" id="cPct"></div><p class="ins" id="iPct"></p></section>
+        <section class="card fade" style="grid-column:1/5;grid-row:2"><div class="card-h"><h2>Tekanan Rumah Sakit</h2><div class="tools"><button class="info" type="button" data-tip="rs" aria-label="Cara membaca tekanan RS">i</button></div></div>
+          <p class="card-s">Admisi pernapasan per 100 tempat tidur per hari</p><div class="chart" id="cRS"></div><div class="legend" id="lgRS"></div><p class="ins" id="iRS"></p></section>
+        <section class="card fade" style="grid-column:5/9;grid-row:2"><div class="card-h"><h2>Kasus Berlebih per Tahun</h2><div class="tools"><button class="info" type="button" data-tip="year" aria-label="Cara membaca kasus per tahun">i</button></div></div>
+          <p class="card-s">Jan–Okt tiap tahun</p><div class="chart" id="cYear"></div><div class="legend" id="lgYear"></div><p class="ins" id="iYear"></p></section>
+        <section class="card tr-card fade" style="grid-column:9/13;grid-row:2" data-notes="dampak"></section>
+      </div>
+
+      <div class="page" data-page="jaringan">
+        <section class="card fade" style="grid-column:1/7;grid-row:1"><div class="card-h"><h2>Cakupan Stasiun per Provinsi</h2><div class="tools"><button class="info" type="button" data-tip="cover" aria-label="Cara membaca cakupan">i</button></div></div>
+          <p class="card-s">Status stasiun di tiap provinsi</p><div class="chart" id="cCover"></div><div class="legend" id="lgCover"></div><p class="ins" id="iCover"></p></section>
+        <section class="card fade" style="grid-column:7/10;grid-row:1/3"><div class="card-h"><h2>Kelayakan Data per Stasiun</h2><div class="tools"><button class="info" type="button" data-tip="cap" aria-label="Cara membaca kelayakan">i</button></div></div>
+          <p class="card-s">% jam data valid</p><div class="chart" id="cCap"></div><p class="ins" id="iCap"></p></section>
+        <section class="card fade" style="grid-column:10/13;grid-row:1"><div class="card-h"><h2>IKU "Baik", PM2.5 Buruk</h2><div class="tools"><button class="info" type="button" data-tip="iku" aria-label="Cara membaca IKU">i</button></div></div>
+          <p class="card-s">Hari PM2.5 &gt; 55 pada 2025</p><div class="chart" id="cIKU"></div><p class="ins" id="iIKU"></p></section>
+        <section class="card fade" style="grid-column:1/7;grid-row:2"><div class="card-h"><h2>Rencana Aksi Jaringan</h2><div class="tools"><button class="info" type="button" data-tip="act" aria-label="Cara membaca rencana aksi">i</button></div></div>
+          <div class="chart" id="cAct" style="overflow:auto;margin:6px 8px 8px"></div></section>
+        <section class="card tr-card fade" style="grid-column:10/13;grid-row:2" data-notes="jaringan"></section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<aside class="drawer" id="drawer" aria-label="Tanya Data" aria-hidden="true">
+  <div class="dr-h"><h2>Tanya Data</h2><button class="x" type="button" id="btnChatClose" aria-label="Tutup Tanya Data">×</button></div>
+  <div class="dr-tools"><button class="chip" type="button" id="btnNewChat">+ Percakapan baru</button><span class="chip">Contoh tampilan</span></div>
+  <div class="log" id="log"></div>
+  <div class="dr-tools" id="sugs"></div>
+  <form class="dr-f" id="chatForm"><label for="q" class="sr">Pertanyaan</label><input id="q" placeholder="Tanya tentang udara dan pasien" autocomplete="off"><button type="submit">Kirim</button></form>
+</aside>
+
+<dialog id="guide" aria-labelledby="gTitle">
+  <div class="dg-h"><h2 id="gTitle">Panduan JERNIH</h2><button class="x" type="button" id="btnGuideClose" aria-label="Tutup panduan">×</button></div>
+  <div class="dg"><nav aria-label="Isi panduan" id="guideNav"></nav><div class="body" id="guideBody"></div></div>
+</dialog>
+<dialog id="kp" aria-labelledby="kpTitle">
+  <div class="dg-h"><h2 id="kpTitle">Poin kunci</h2><button class="x" type="button" id="kpClose" aria-label="Tutup detail">×</button></div>
+  <div class="kp-body" id="kpBody"></div>
+</dialog>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const D = window.JERNIH;
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+if (!D) { document.getElementById('grid').innerHTML = '<div class="empty" style="grid-column:1/13">Data belum dimuat. Jalankan analysis/06_export_dashboard.py lalu muat ulang.</div>'; return; }
+const NS = 'http://www.w3.org/2000/svg';
+const fmt = (v, d = 0) => v == null || !isFinite(v) ? '–' : Number(v).toLocaleString('id-ID', {maximumFractionDigits: d, minimumFractionDigits: d});
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ARCH = {kronis: 'Kronis perkotaan', gambut: 'Gambut bereskalasi', ekstrem: 'Kalteng ekstrem', bersih: 'Latar bersih', 'tanpa-data': 'Data tidak cukup'};
+const ARCHS = ['kronis', 'gambut', 'ekstrem', 'bersih'];
+const AC = a => css({kronis: '--a-kronis', gambut: '--a-gambut', ekstrem: '--a-ekstrem', bersih: '--a-bersih'}[a] || '--a-none');
+const C0I = {'15': 0, '25': 1, '37.5': 2, '55': 3};
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const YEARS = ['2024', '2025', '2026'], ISLANDS = ['Sumatra', 'Jawa', 'Kalimantan', 'Sulawesi', 'Papua'];
+const ISL = p => /Jakarta|Jawa|Yogyakarta/.test(p) ? 'Jawa' : /Kalimantan/.test(p) ? 'Kalimantan' : /Sulawesi/.test(p) ? 'Sulawesi' : /Papua/.test(p) ? 'Papua' : 'Sumatra';
+D.stations.forEach(s => s.isl = ISL(s.prov));
+const DEF = () => ({years: [...YEARS], months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], islands: [...ISLANDS], archs: [...ARCHS, 'tanpa-data'], groups: ['u5', 'o60'], c0: '25'});
+const S = Object.assign({page: 'ringkasan', metric: 'af', wind: 'PLB-01', sel: null}, DEF());
+try { const s = JSON.parse(sessionStorage.getItem('jernih3') || '{}'); Object.assign(S, s, {sel: null}); } catch (e) {}
+const save = () => { try { const {page, sel, ...rest} = S; sessionStorage.setItem('jernih3', JSON.stringify(rest)); } catch (e) {} };
+const ST = Object.fromEntries(D.stations.map(s => [s.code, s]));
+const PROV = Object.fromEntries(D.provinces.map(p => [p.id, p]));
+const SHORT = n => n.replace(' (incl. Papua Barat Daya)', '').replace(' (incl. Papua Selatan)', '').replace('Kalimantan', 'Kal.').replace('Sumatera', 'Sum.').replace('Sulawesi', 'Sul.').replace('Kepulauan', 'Kep.');
+
+const stage = $('#stage');
+function fit() { const vw = innerWidth, vh = innerHeight;
+  if (vw < 900) { document.body.classList.add('mobile'); stage.style.transform = ''; stage.style.height = ''; return; }
+  document.body.classList.remove('mobile'); let k = vw / 1440, H = vh / k; if (H < 790) { k = vh / 790; H = 790; }
+  stage.style.height = H + 'px'; stage.style.transform = `scale(${k})`; stage.style.left = Math.max(0, (vw - 1440 * k) / 2) + 'px'; }
+
+/* ---------- selection ---------- */
+const group = () => S.groups.length === 2 ? 'both' : S.groups[0];
+const monthIdx = () => D.months.map((m, i) => [m, i]).filter(([m]) => S.years.includes(m.slice(0, 4)) && S.months.includes(+m.slice(5))).map(x => x[1]);
+const selStations = () => D.stations.filter(s => S.islands.includes(s.isl) && S.archs.includes(s.arch));
+const codesSel = () => selStations().map(s => s.code);
+function agg(codes, idx, c0 = S.c0, g = group()) { const ci = C0I[c0]; const o = {ex: 0, obs: 0, pmw: 0, vd: 0, exc: 0, haz: 0, xb: [0, 0, 0, 0], ex55: 0, ex25: 0};
+  codes.forEach(c => idx.forEach(i => { const r = D.monthly[c][i]; if (!r) return;
+    if (r.vd) { o.pmw += r.pm * r.vd; o.vd += r.vd; o.exc += r.exc; o.haz += r.haz; }
+    if (r.xu && !['JMB-02', 'MER-01'].includes(c)) { const pick = a => g === 'u5' ? r.xu[a] : g === 'o60' ? r.xo[a] : r.xu[a] + r.xo[a];
+      o.ex += pick(ci); o.ex55 += pick(3); o.ex25 += pick(1); o.obs += g === 'u5' ? r.ou : g === 'o60' ? r.oo : r.ou + r.oo; if (r.xb) r.xb.forEach((v, k) => o.xb[k] += v); } }));
+  o.pm = o.vd ? o.pmw / o.vd : null; o.excPct = o.vd ? o.exc / o.vd * 100 : null; o.af = o.obs ? o.ex / o.obs * 100 : null; return o; }
+const groupLbl = () => ({both: 'balita + lansia', u5: 'balita', o60: 'lansia'})[group()];
+const c0Lbl = () => ({55: 'baku mutu 55', 25: 'ambang 25', 15: 'pedoman WHO 15'})[S.c0];
+function monthsLbl() { const m = [...S.months].sort((a, b) => a - b); if (m.length === 12) return ''; if (m.join() === '8,9,10') return 'musim asap'; if (m.join() === '1,2,3,4,5,6,7,11,12') return 'luar musim asap'; return m.length <= 3 ? m.map(x => MON[x - 1]).join(', ') : `${m.length} bulan`; }
+const periodLbl = () => { const y = [...S.years].sort(); const yl = y.length === 3 ? '2024–2026' : y.join(', '); const ml = monthsLbl(); return yl + (ml ? ' · ' + ml : ''); };
+function growth(codes) { const ys = [...S.years].sort(); let yNow = ys[ys.length - 1], yPrev = ys.length > 1 ? ys[0] : String(+yNow - 1); if (yPrev < '2024') return null;
+  const mm = S.months.filter(m => m <= 10); if (!mm.length) return null;
+  const pick = y => D.months.map((m, i) => [m, i]).filter(([m]) => m.startsWith(y) && mm.includes(+m.slice(5))).map(x => x[1]);
+  const a = agg(codes, pick(yNow)), b = agg(codes, pick(yPrev)); return {yNow, yPrev, ex: b.ex ? (a.ex / b.ex - 1) * 100 : null, pm: b.pm ? (a.pm / b.pm - 1) * 100 : null}; }
+
+/* ---------- svg helpers ---------- */
+function el(t, a = {}, p) { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function frame(id) { const box = $(id); box.innerHTML = ''; const w = Math.max(box.clientWidth, 120), h = Math.max(box.clientHeight, 80);
+  const svg = el('svg', {viewBox: `0 0 ${w} ${h}`, role: 'img', 'aria-label': box.closest('.card').querySelector('h2').textContent}, box); return {svg, w, h}; }
+const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0 || 1) * (r1 - r0);
+function text(p, x, y, s, cls = 'lab', anchor = 'start', extra = {}) { const t = el('text', {x, y, class: cls, 'text-anchor': anchor, ...extra}, p); t.textContent = s; return t; }
+const tip = $('#tip');
+function showTip(ev, html) { tip.innerHTML = html; tip.style.opacity = 1; const r = ev.target.getBoundingClientRect(); const cx = ev.clientX || r.right, cy = ev.clientY || r.bottom;
+  tip.style.left = Math.max(4, Math.min(cx + 14, innerWidth - tip.offsetWidth - 8)) + 'px'; tip.style.top = Math.max(4, Math.min(cy + 14, innerHeight - tip.offsetHeight - 8)) + 'px'; }
+const hideTip = () => tip.style.opacity = 0;
+function hover(n, html) { n.addEventListener('mousemove', e => showTip(e, typeof html === 'function' ? html() : html)); n.addEventListener('mouseleave', hideTip); }
+const row = (k, v) => `<div class="row"><span>${k}</span><b>${v}</b></div>`;
+const emptyIn = (id, msg) => { $(id).innerHTML = `<div class="empty">${msg}</div>`; };
+function grow(node, attr, to) { if (reduce) { node.setAttribute(attr, to); return; } node.style.transition = 'all .6s cubic-bezier(.2,.8,.2,1)'; requestAnimationFrame(() => requestAnimationFrame(() => node.setAttribute(attr, to))); }
+function drawLine(p) { if (reduce) return p; const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)'; p.style.strokeDashoffset = 0; return p; }
+function countUp(node, to, d, pre, suf) { const span = node.firstChild; if (reduce || to == null) { span.textContent = pre + fmt(to, d) + suf; return; } const t0 = performance.now(); const step = t => { const k = Math.min(1, (t - t0) / 650), e = 1 - Math.pow(1 - k, 3); span.textContent = pre + fmt(to * e, d) + suf; if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); }
+function yGrid(svg, y, ticks, x0, x1, f = v => fmt(v)) { const g = el('g', {class: 'axis'}, svg); ticks.forEach(t => { el('line', {x1: x0, x2: x1, y1: y(t), y2: y(t), class: 'gl'}, g); text(g, x0 - 5, y(t) + 3, f(t), '', 'end'); }); }
+const nice = m => { const p = Math.pow(10, Math.floor(Math.log10(m || 1))); const n = m / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; };
+const kfmt = v => v >= 1000 ? fmt(v / 1000, v % 1000 && v < 10000 ? 1 : 0) + 'rb' : fmt(v);
+
+/* ---------- charts ---------- */
+function hbars(id, rows, o = {}) { if (!rows.length) return emptyIn(id, o.empty || 'Tidak ada data untuk filter ini.');
+  const {svg, w, h} = frame(id); const lw = o.lw || 90, vw = o.vw || 64, n = rows.length; const rh = h / n, bh = Math.max(6, Math.min(rh * .7, 32));
+  const tot = r => r.segs ? r.segs.reduce((a, s) => a + s.v, 0) : r.v; const max = o.max || Math.max(...rows.map(tot)) || 1; const x = lin(0, max, lw, w - vw);
+  (o.refs || []).forEach(rf => el('line', {x1: x(rf.v), x2: x(rf.v), y1: 0, y2: h, class: rf.cls}, svg));
+  rows.forEach((r, i) => { const yy = i * rh + (rh - bh) / 2; text(svg, lw - 7, yy + bh / 2 + 4, r.label, r.bold ? 'lab-b' : 'lab', 'end');
+    let acc = 0; (r.segs || [{v: r.v, color: r.color}]).forEach(sg => { const b = el('rect', {x: x(acc), y: yy, height: bh, width: 0, rx: 3, fill: sg.color}, svg); grow(b, 'width', Math.max(1.5, x(acc + sg.v) - x(acc) - (r.segs ? 1 : 0))); acc += sg.v; });
+    text(svg, x(acc) + 6, yy + bh / 2 + 4, r.vl ?? fmt(tot(r), o.dec || 0), 'lab-b'); const hit = el('rect', {x: 0, y: i * rh, width: w, height: rh, fill: 'transparent'}, svg); if (r.tip) hover(hit, r.tip); }); }
+function combo(id, cats, bars, o = {}) { if (!cats.length) return emptyIn(id, 'Tidak ada bulan pada filter ini.');
+  const {svg, w, h} = frame(id); const m = {l: 38, r: 8, t: 14, b: 20}; const vals = bars.map(b => b.v).concat((o.line || []).filter(v => v != null)); const ymax = nice(Math.max(...vals, 1) * 1.08); const y = lin(0, ymax, h - m.b, m.t);
+  yGrid(svg, y, [0, ymax / 2, ymax], m.l, w - m.r, o.yf);
+  (o.refs || []).forEach(r => { if (r.v < ymax) { el('line', {x1: m.l, x2: w - m.r, y1: y(r.v), y2: y(r.v), class: r.cls}, svg); text(svg, w - m.r - 2, y(r.v) - 3, r.label, 'lab halo', 'end'); } });
+  const bw = (w - m.l - m.r) / cats.length, cx = i => m.l + bw * i + bw / 2;
+  bars.forEach((b, i) => { const r = el('rect', {x: cx(i) - bw * .36, width: bw * .72, y: y(b.v), height: 0, rx: 2, fill: b.color}, svg); if (reduce) r.setAttribute('height', Math.max(0, h - m.b - y(b.v))); else { r.setAttribute('y', h - m.b); r.style.transition = 'all .6s cubic-bezier(.2,.8,.2,1)'; requestAnimationFrame(() => requestAnimationFrame(() => { r.setAttribute('y', y(b.v)); r.setAttribute('height', Math.max(0, h - m.b - y(b.v))); })); }
+    if (b.label) text(svg, cx(i), y(b.v) - 4, b.label, 'lab-b', 'middle'); });
+  if (o.line) { let d = ''; o.line.forEach((v, i) => { if (v == null) return; d += (d ? 'L' : 'M') + cx(i) + ',' + y(v); }); drawLine(el('path', {d, fill: 'none', stroke: css('--trend'), 'stroke-width': 2, 'stroke-linejoin': 'round'}, svg));
+    if (cats.length <= 14) o.line.forEach((v, i) => { if (v != null) el('circle', {cx: cx(i), cy: y(v), r: 2.8, fill: css('--card'), stroke: css('--trend'), 'stroke-width': 1.6}, svg); }); }
+  const ax = el('g', {class: 'axis'}, svg); cats.forEach((c, i) => { const lb = o.xl ? o.xl(c, i) : c; if (lb) text(ax, cx(i), h - 5, lb, '', 'middle'); });
+  cats.forEach((c, i) => { const hit = el('rect', {x: m.l + bw * i, y: m.t, width: bw, height: h - m.t - m.b, fill: 'transparent'}, svg); hover(hit, () => o.tip(i)); }); }
+function lines(id, series, o) { const {svg, w, h} = frame(id); const m = {l: 34, r: o.r ?? 62, t: 8, b: 20}; const n = series[0].pts.length;
+  const x = lin(0, n - 1, m.l, w - m.r), y = lin(o.ymin ?? 0, o.ymax, h - m.b, m.t);
+  if (o.band) el('rect', {x: x(o.band[0]), y: m.t, width: x(o.band[1]) - x(o.band[0]), height: h - m.t - m.b, fill: css('--red-tint')}, svg);
+  yGrid(svg, y, o.ticks, m.l, w - m.r, o.tf); (o.refs || []).forEach(r => { el('line', {x1: m.l, x2: w - m.r, y1: y(r.v), y2: y(r.v), class: r.cls}, svg); text(svg, m.l + 4, y(r.v) - 4, r.label, 'lab'); });
+  const ends = []; series.forEach(s => { let d = ''; s.pts.forEach((v, i) => { if (v == null) return; d += (d ? 'L' : 'M') + x(i) + ',' + y(v); }); drawLine(el('path', {d, fill: 'none', stroke: s.color, 'stroke-width': s.w || 2.2, 'stroke-linejoin': 'round'}, svg)); ends.push({y: y(s.pts[s.pts.length - 1]), name: s.name}); });
+  ends.sort((a, b) => a.y - b.y).forEach((e, i, a) => { if (i && e.y - a[i - 1].y < 12) e.y = a[i - 1].y + 12; text(svg, w - m.r + 5, e.y + 3, e.name, 'lab-b'); });
+  const ax = el('g', {class: 'axis'}, svg); o.xticks.forEach(i => text(ax, x(i), h - 5, o.xf(i), '', 'middle'));
+  const cross = el('line', {y1: m.t, y2: h - m.b, stroke: css('--muted'), 'stroke-dasharray': '3 3', opacity: 0}, svg); const hv = el('rect', {x: m.l, y: m.t, width: w - m.l - m.r, height: h - m.t - m.b, fill: 'transparent'}, svg);
+  hv.addEventListener('mousemove', e => { const r = svg.getBoundingClientRect(); const i = Math.max(0, Math.min(n - 1, Math.round(((e.clientX - r.left) * w / r.width - m.l) / ((w - m.l - m.r) / (n - 1))))); cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 1); showTip(e, `<b>${o.xf(i, true)}</b>` + series.map(s => row(s.name, fmt(s.pts[i], o.dec ?? 2) + (o.unit || ''))).join('')); });
+  hv.addEventListener('mouseleave', () => { hideTip(); cross.setAttribute('opacity', 0); }); }
+function scatter(id, pts, o) { const {svg, w, h} = frame(id); const m = {l: 38, r: 12, t: 16, b: 26}; const sx = o.xlog ? Math.log : v => v, sy = o.ylog ? Math.log : v => v;
+  const X = v => lin(sx(o.x0), sx(o.x1), m.l, w - m.r)(sx(v)), Y = v => lin(sy(o.y0), sy(o.y1), h - m.b, m.t)(sy(v));
+  yGrid(svg, Y, o.yt, m.l, w - m.r, o.yf); const ax = el('g', {class: 'axis'}, svg); o.xt.forEach(t => text(ax, X(t), h - m.b + 13, (o.xf || fmt)(t), '', 'middle')); text(ax, w - m.r, h - 2, o.xl, '', 'end'); text(ax, m.l, m.t - 6, o.yl);
+  (o.vref || []).forEach(r => el('line', {x1: X(r.v), x2: X(r.v), y1: m.t, y2: h - m.b, class: r.cls}, svg));
+  (o.quads || []).forEach(q => text(svg, q.x === 'r' ? w - m.r - 4 : m.l + 6, q.y === 't' ? m.t + 10 : h - m.b - 6, q.t, 'lab', q.x === 'r' ? 'end' : 'start', {opacity: .7}));
+  if (o.fit) { const P = pts.filter(p => p.on !== false); if (P.length > 2) { const mx = P.reduce((a, p) => a + p.x, 0) / P.length, my = P.reduce((a, p) => a + p.y, 0) / P.length; const b = P.reduce((a, p) => a + (p.x - mx) * (p.y - my), 0) / (P.reduce((a, p) => a + (p.x - mx) ** 2, 0) || 1); const a = my - b * mx;
+    el('line', {x1: X(o.x0), x2: X(o.x1), y1: Y(Math.max(o.y0, a + b * o.x0)), y2: Y(Math.min(o.y1, a + b * o.x1)), stroke: css('--trend'), 'stroke-width': 1.6, 'stroke-dasharray': '6 4'}, svg); } }
+  const placed = [], clash = a => placed.some(b => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
+  pts.forEach(p => { const c = el('circle', {cx: X(p.x), cy: Y(p.y), r: p.r || 5.5, fill: p.color, 'fill-opacity': p.on === false ? .15 : .9, stroke: css('--card'), 'stroke-width': 1.5}, svg); hover(c, p.tip); placed.push({x: X(p.x) - 5, y: Y(p.y) - 5, w: 10, h: 10}); });
+  pts.forEach(p => { if (!p.label || p.on === false) return; const lw = p.label.length * 6.1 + 2;
+    const c = [[X(p.x) + 8, Y(p.y) - 6], [X(p.x) - 8 - lw, Y(p.y) - 6], [X(p.x) - lw / 2, Y(p.y) - 19], [X(p.x) - lw / 2, Y(p.y) + 8]].map(([a, b]) => ({x: a, y: b, w: lw, h: 12})).filter(c => c.x > m.l && c.x + c.w < w - 2 && c.y > 0 && c.y + c.h < h - m.b).find(c => !clash(c));
+    if (c) { placed.push(c); text(svg, c.x, c.y + 10, p.label, 'lab'); } }); }
+function seqColor(v, bins) { if (v == null) return css('--hatch'); const k = bins.findIndex(b => v < b); return css('--s' + (k < 0 ? 6 : k + 1)); }
+function mapBase(id) { const box = $(id); box.innerHTML = ''; const svg = el('svg', {viewBox: '0 -6 1035 345', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': box.closest('.card').querySelector('h2').textContent}, box);
+  const pat = el('pattern', {id: 'hatch' + id.slice(2), width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)'}, el('defs', {}, svg)); el('rect', {width: 6, height: 6, fill: css('--land')}, pat); el('line', {x1: 0, y1: 0, x2: 0, y2: 6, stroke: css('--hatch'), 'stroke-width': 2.2}, pat);
+  return {svg, hatch: `url(#hatch${id.slice(2)})`}; }
+const swHatch = '<i class="sw" style="background:repeating-linear-gradient(45deg,var(--hatch) 0 2px,var(--land) 2px 4px)"></i>';
+
+/* ---------- content ---------- */
+const PAGES = {ringkasan: ['Ringkasan Nasional', 'Udara Kotor dan Rawat Inap ISPA'], waktu: ['Waktu & Wilayah', 'Kapan dan di Mana Udara Paling Kritis'],
+  pemicu: ['Pemicu Polusi', 'Lalu Lintas Kota dan Musim Gambut'], dampak: ['Dampak Kesehatan', 'Pasien Bertambah dan Kelompok Rentan'], jaringan: ['Jaringan Pemantau', 'Data Andal dan Titik Buta']};
+const ORN = {ringkasan: ['lung', 'hosp', 'part', 'part', 'cal'], waktu: ['part', 'cal', 'part', 'cal', 'cal'], pemicu: ['fact', 'fact', 'part', 'part', 'wind'], dampak: ['lung', 'part', 'hosp', 'lung', 'hosp'], jaringan: ['tower', 'tower', 'tower', 'tower', 'tower']};
+const BANNER = {
+  ringkasan: () => { const a = agg(codesSel(), monthIdx()); return `<b>Temuan Kritis:</b> ${fmt(a.af)}% rawat inap ISPA ${groupLbl()} (${fmt(a.ex)} kasus) berasosiasi dengan PM2.5 di atas ${c0Lbl()} µg/m³. Patuh baku mutu nasional 55 hanya mencegah ${fmt(a.ex25 ? a.ex55 / a.ex25 * 100 : 0)}% dari beban di atas ambang 25.`; },
+  waktu: () => '<b>Temuan Kritis:</b> asap datang tiap 1 Agustus dan makin pekat tiap tahun. Rata-rata PM2.5 nasional Jan–Okt naik dari 35,3 menjadi 47,1 µg/m³ (2024 ke 2026), seluruhnya dari musim asap.',
+  pemicu: () => '<b>Temuan Kritis:</b> dua akar masalah butuh dua kebijakan. Level harian kota mengikuti lalu lintas, lonjakan mengikuti musim di lahan gambut. Cuaca lokal hampir tidak berpengaruh.',
+  dampak: () => '<b>Temuan Kritis:</b> pasien bertambah sejak PM2.5 25 µg/m³, jauh di bawah baku mutu 55, dan datang di hari yang sama dengan lonjakan asap. Tidak ada jeda dua hari untuk bersiap.',
+  jaringan: () => '<b>Temuan Kritis:</b> wilayah terkotor justru paling buta. Sensor Muaro Jambi (baseline 68,9 µg/m³) rusak dengan 99,5% data tidak valid, dan 13 dari 34 provinsi tidak punya stasiun.'};
+function kpis() { const cs = codesSel(), idx = monthIdx(), a = agg(cs, idx), g = growth(cs), sts = selStations();
+  const arrow = (v, y) => v == null ? '' : `<b class="${v >= 0 ? 'up' : 'down'}">${v >= 0 ? 'Naik' : 'Turun'} ${fmt(Math.abs(v))}%</b> dari ${y}`;
+  const ok = sts.filter(s => s.cap >= 85 && !s.issue.startsWith('Macet')).length; const rs = sts.filter(s => s.off100).sort((p, q) => q.peak100 / q.off100 - p.peak100 / p.off100)[0];
+  const tb = a.xb.reduce((p, q) => p + q, 0);
+  const K = {ringkasan: [['Jumlah Kasus ISPA Berlebih', a.ex, 0, '', '', 'kasus', g ? arrow(g.ex, g.yPrev) : periodLbl()], ['Porsi Rawat Inap Terkait PM2.5', a.af, 0, '', '%', '', `≈ 1 dari ${a.af ? fmt(100 / a.af) : '–'} pasien ${groupLbl()}`],
+      ['Tercegah Bila Patuh Baku 55', a.ex25 ? a.ex55 / a.ex25 * 100 : null, 0, '', '%', '', `dari kasus di atas ambang 25`], ['Rata-rata PM2.5', a.pm, 1, '', '', 'µg/m³', g ? arrow(g.pm, g.yPrev) : periodLbl()], ['Hari Melebihi Baku Mutu', a.excPct, 0, '', '%', '', `${fmt(a.exc)} hari-stasiun di atas 55`]],
+    waktu: [['Rata-rata PM2.5', a.pm, 1, '', '', 'µg/m³', g ? arrow(g.pm, g.yPrev) : periodLbl()], ['Hari Melebihi Baku Mutu', a.excPct, 0, '', '%', '', `${fmt(a.exc)} hari-stasiun`], ['Hari Sangat Tidak Sehat', a.haz, 0, '', '', 'hari', 'ISPU di atas 200'],
+      ['Jam Paling Kotor', null, 0, '', '', 'WIB/lokal', '1,2–1,5× rata-rata harian', '07–09'], ['Beda Akhir Pekan', null, 0, '', '', '', 'akhir pekan tidak lebih bersih', '±0,5%']],
+    pemicu: [['Korelasi Lalu Lintas', null, 0, '', '', '', 'dengan PM2.5 di luar musim asap', '0,76'], ['Korelasi Jarak ke Jalan', null, 0, '', '', '', 'makin dekat jalan, makin kotor', '−0,65'], ['Lonjakan Musim Asap', 7.3, 1, '', '×', '', 'Kalteng, Agu–Okt vs Jan–Jun'],
+      ['Rasio PM2.5/PM10 Saat Asap', 0.81, 2, '', '', '', 'perkotaan 0,64'], ['Pengaruh Cuaca Lokal', null, 0, '', '', '', 'musim 0,78', '≤ 0,08']],
+    dampak: [['Jumlah Kasus ISPA Berlebih', a.ex, 0, '', '', 'kasus', `${groupLbl()}, di atas ${c0Lbl()}`], ['Ambang Efek', 25, 0, '', '', 'µg/m³', 'baku mutu nasional 55'], ['Kasus di Hari Lolos Baku', tb ? a.xb[0] / tb * 100 : null, 0, '', '%', '', 'PM2.5 harian 25–55'],
+      ['Bila PM2.5 Berlipat Dua', 57, 0, '+', '%', '', 'ISPA balita, lansia +55%'], ['Lonjakan RS Terbesar', rs ? rs.peak100 / rs.off100 : null, 1, '', '×', '', rs ? `${rs.code} ${rs.kota}` : 'tidak ada RS']],
+    jaringan: [['Stasiun Layak Dipakai', null, 0, '', '', '', 'jam valid ≥ 85% dan tidak macet', `${ok}/${sts.length}`], ['Provinsi Tanpa Stasiun', null, 0, '', '', '', 'dari 34 provinsi', '13/34'], ['Sensor Macet Tak Terdeteksi', 9, 0, '', '', 'bulan', 'BJB-01, tetap berlabel VALID'],
+      ['Stasiun Kembar', 1, 0, '', '', 'pasang', 'KTG-01 dan KTG-02'], ['Celah Terjauh', 1319, 0, '', '', 'km', 'MER-01 ke stasiun terdekat']]}[S.page];
+  $('#kpis').innerHTML = K.map((k, i) => `<div class="kpi"><svg class="orn" aria-hidden="true"><use href="#o-${ORN[S.page][i]}"/></svg><div class="l" title="${k[0]}">${k[0]}</div><div class="v"><span></span>${k[5] ? `<small>${k[5]}</small>` : ''}</div><div class="d">${k[6]}</div></div>`).join('');
+  $$('#kpis .v').forEach((v, i) => { const k = K[i]; if (k[7]) v.firstChild.textContent = k[7]; else countUp(v, k[1], k[2], k[3], k[4]); }); }
+
+// Poin Kunci: [angka, headline, temuan lengkap, rekomendasi, pelaksana, kartu terkait]
+function keyPoints() { const a = agg(codesSel(), monthIdx()); const prevent = a.ex25 ? a.ex55 / a.ex25 * 100 : 0;
+  return {ringkasan: [[fmt(prevent) + '%', 'beban tercegah bila patuh baku 55', `Dari ${fmt(a.ex25)} kasus ISPA ${groupLbl()} berlebih di atas ambang 25 µg/m³, hanya ${fmt(a.ex55)} hilang bila PM2.5 ditekan ke baku mutu 55. Pasien sudah bertambah sejak 25 µg/m³.`, 'Usulkan 25 µg/m³ sebagai pemicu imbauan kesehatan harian.', 'Kemenkes, Komite Penanggulangan Penyakit Respirasi', 'Kasus Berlebih per Level PM2.5'],
+      ['18,5rb', 'kasus balita berlebih di Jakarta', 'JKT-02, JKT-03, dan JKT-01 adalah tiga penyumbang terbesar kasus balita berlebih, tanpa satu pun episode asap. PM2.5 Jakarta di atas 46 µg/m³ sepanjang tahun.', 'Kendalikan lalu lintas dan industri sepanjang tahun, bukan hanya saat episode.', 'Dinkes dan DLH DKI Jakarta', 'Peringkat Provinsi'],
+      ['867', 'µg/m³ di Kalteng, Oktober 2026', 'Musim asap Agu–Okt naik di 10 wilayah gambut. Rata-rata Oktober 2026 di Palangka Raya dan Sampit mencapai 867 µg/m³, kategori ISPU Berbahaya.', 'Aktifkan siaga RS wilayah gambut mulai Juli.', 'Dinkes Kalteng, Riau, Jambi, Sumsel', 'Tren Bulanan Kasus Berlebih'],
+      ['5', 'stasiun tidak layak dipakai', 'JMB-02, MER-01, MDN-01, BJB-01, dan PLB-01 di bawah 85% jam valid atau macet, sehingga angkanya tidak bisa jadi dasar keputusan.', 'Perbaiki kelima stasiun sebelum musim asap berikutnya.', 'KLH, Direktorat Pengendalian Pencemaran Udara', 'halaman 05 Jaringan Pemantau']],
+    waktu: [['1 Agu', 'awal musim asap tiap tahun', 'Di wilayah gambut, PM2.5 naik bertingkat setiap 1 Agustus dan turun 1 November, berulang 2024–2026.', 'Jadwalkan posko kesehatan dan stok obat mulai Juli.', 'Dinkes provinsi wilayah gambut', 'Kalender PM2.5 per Wilayah'],
+      ['0%', 'perubahan di luar musim asap', 'Rata-rata Jan–Jun hampir identik 2024–2026. Kenaikan nasional 35,3 → 47,1 µg/m³ seluruhnya datang dari Agu–Okt.', 'Arahkan anggaran ke pencegahan karhutla.', 'BNPB, KLH', 'Pola Musiman'],
+      ['365', 'hari Marunda di atas baku', 'JKT-02 di kawasan industri dan pelabuhan Marunda melebihi 55 µg/m³ setiap hari sepanjang 2025.', 'Audit sumber industri dan pelabuhan di Jakarta Utara.', 'DLH DKI Jakarta', 'Kalender PM2.5 per Wilayah'],
+      ['07–09', 'jam paling kotor', 'Puncak pagi 1,2–1,5× rata-rata harian (waktu setempat). Akhir pekan tidak lebih bersih (beda ±0,5%).', 'Imbauan aktivitas luar ruang di pagi hari, setiap hari.', 'Dinkes, dinas pendidikan', 'Pola Jam Harian']],
+    pemicu: [['0,76', 'korelasi lalu lintas dan PM2.5', 'Level PM2.5 di luar musim asap mengikuti jumlah kendaraan per jam (ρ 0,76) dan jarak ke jalan (ρ −0,65).', 'Uji coba pembatasan kendaraan di koridor dekat stasiun.', 'Dishub, DLH', 'Lalu Lintas vs PM2.5'],
+      ['0,78', 'pengaruh musim, cuaca ≤ 0,08', 'Model gradient boosting: musim 0,78, jarak ke jalan 0,59, sedangkan suhu, kelembapan, dan angin lokal di bawah 0,1.', 'Gunakan kalender musim sebagai pemicu siaga, bukan prakiraan cuaca harian.', 'Dinkes', 'Faktor Paling Berpengaruh'],
+      ['7,3×', 'lonjakan asap di KTG-01', 'KTG-01 berlabel "Urban Background", padahal lonjakan musim asapnya 7,3×, tertinggi di jaringan.', 'Susun kebijakan per tipe wilayah hasil data, bukan label lokasi.', 'KLH', 'Peta Tipe Wilayah'],
+      ['2,2×', 'PM2.5 dari arah selatan', 'Di Palembang (PLB-01), angin dari selatan membawa PM2.5 2,2× lebih tinggi dibanding dari barat laut.', 'Pantau titik api di arah datang angin.', 'BPBD Sumatera Selatan', 'Arah Angin dan PM2.5']],
+    dampak: [['25', 'µg/m³, pasien mulai bertambah', 'Rawat inap naik mulai PM2.5 25 µg/m³, menjadi 2× di 55 dan 4× di 150 µg/m³.', 'Tetapkan 25 µg/m³ sebagai ambang siaga kesehatan.', 'Kemenkes', 'Kurva Risiko Rawat Inap'],
+      ['H0', 'pasien datang di hari lonjakan', 'Admisi naik 1,8× di hari PM2.5 melonjak dan turun di hari yang sama saat asap hilang (49 kejadian).', 'Siapkan RS sebelum musim asap, bukan setelah sensor naik.', 'RS rujukan, Dinkes', 'Kapan Pasien Datang'],
+      ['+57%', 'balita, lansia +55%', 'Bila PM2.5 berlipat dua, rawat inap ISPA balita naik 57% dan lansia 55%. Lansia lebih banyak secara absolut.', 'Jalankan imbauan untuk kedua kelompok sekaligus.', 'Posyandu, layanan lansia', 'Kerentanan per Penyakit'],
+      ['10,6×', 'lonjakan RS Pangkalan Bun', 'PKN-01 mencapai 10,6× admisi normal saat puncak asap; RS Tipe C Sampit 115 admisi per 100 tempat tidur per hari.', 'Siapkan rujukan dan tempat tidur cadangan di RS Tipe C wilayah gambut.', 'Dinkes Kalteng, RS rujukan', 'Tekanan Rumah Sakit']],
+    jaringan: [['5', 'stasiun tidak layak', 'JMB-02 (0,5% valid), MER-01 (20%), MDN-01 (68%), BJB-01 (70%), PLB-01 (80%).', 'Perbaiki atau ganti sensor, prioritas JMB-02 dan PLB-01.', 'KLH', 'Kelayakan Data per Stasiun'],
+      ['9 bln', 'data macet lolos QC', 'BJB-01 terkunci di 336,7 lalu 3,5 µg/m³ selama 9 bulan, semuanya berlabel VALID.', 'Tambahkan aturan flatline ≥ 6 jam di pipeline QC.', 'KLH, operator AQMS', 'Kelayakan Data per Stasiun'],
+      ['1', 'pasang stasiun kembar', 'KTG-01 dan KTG-02 berjarak 112 km tetapi datanya identik (r = 1,000, beda rata-rata 0,96 µg/m³).', 'Relokasi satu unit ke provinsi tanpa stasiun.', 'KLH', 'Rencana Aksi Jaringan'],
+      ['13', 'provinsi tanpa stasiun', '13 dari 34 provinsi tidak dipantau, termasuk seluruh Nusa Tenggara dan Maluku. IKU juga tidak membaca PM2.5.', 'Tambah stasiun di Nusa Tenggara, Maluku, Sulawesi; usulkan PM2.5 masuk IKU.', 'KLH, Bappenas', 'Cakupan Stasiun per Provinsi']]}[S.page]; }
+function notes() { const box = document.querySelector(`[data-notes="${S.page}"]`); if (!box) return; if (S.sel && S.page === 'ringkasan') return provProfile(box);
+  const K = keyPoints();
+  box.innerHTML = `<svg class="orn" aria-hidden="true"><use href="#o-${S.page === 'jaringan' ? 'tower' : 'lung'}"/></svg><div class="card-h"><h2>Poin Kunci &amp; Aksi</h2><small>klik untuk detail</small></div><ul class="kp">${K.map((k, i) => `<li><button type="button" data-i="${i}" aria-haspopup="dialog"><span class="fig">${k[0]}</span><span><span class="hd">${k[1]}</span><span class="ac">${k[3]}</span></span><span class="chev" aria-hidden="true">›</span></button></li>`).join('')}</ul>`;
+  box.querySelectorAll('.kp button').forEach(b => b.onclick = () => openKP(K[+b.dataset.i])); }
+function openKP(k) { $('#kpTitle').textContent = `${PAGES[S.page][0]} · poin kunci`;
+  $('#kpBody').innerHTML = `<div class="big">${k[0]}</div><p class="sub">${k[1]}</p><dl><dt>Temuan</dt><dd>${k[2]}</dd><dt>Rekomendasi</dt><dd>${k[3]}</dd><dt>Pelaksana</dt><dd>${k[4]}</dd><dt>Lihat grafik</dt><dd>${k[5]}</dd></dl><button class="btn go" type="button" id="kpOk">Tutup</button>`;
+  $('#kp').showModal(); $('#kpOk').onclick = () => $('#kp').close(); }
+function provProfile(box) { const p = PROV[S.sel]; const sts = D.stations.filter(s => s.geo === S.sel); const idx = monthIdx();
+  const items = sts.map(s => { const a = agg([s.code], idx); return [fmt(a.pm, 0), `${s.code} · ${s.kota}`, `${fmt(a.ex)} kasus berlebih · ${ARCH[s.arch]}${s.issue ? ' · ' + s.issue : ''}`]; });
+  box.innerHTML = `<div class="card-h"><h2>Profil ${SHORT(p.name)}</h2><button class="back" type="button" id="btnBack" style="margin-left:auto">Kembali</button></div><ul class="kp">${items.length ? items.map(n => `<li><button type="button" tabindex="-1"><span class="fig">${n[0]}<small style="font-size:10px;font-weight:600"> µg/m³</small></span><span><span class="hd">${n[1]}</span><span class="ac">${n[2]}</span></span><span></span></button></li>`).join('') : '<li><button type="button" tabindex="-1"><span class="fig">0</span><span><span class="hd">stasiun di provinsi ini</span><span class="ac">Kandidat lokasi relokasi atau stasiun baru.</span></span><span></span></button></li>'}</ul>`;
+  $('#btnBack').onclick = () => { S.sel = null; notes(); cMap(); }; }
+
+/* ---------- 01 ---------- */
+const MAPM = {af: {bins: [10, 20, 30, 40, 50], lbl: ['< 10%', '10–20', '20–30', '30–40', '40–50', '≥ 50%'], name: '% ISPA terkait PM2.5', f: v => fmt(v) + '%'},
+  pm: {bins: [15.5, 25, 35, 55, 75], lbl: ['< 15,5', '15,5–25', '25–35', '35–55', '55–75', '≥ 75 µg/m³'], name: 'PM2.5 rata-rata', f: v => fmt(v, 1) + ' µg/m³'},
+  exc: {bins: [5, 10, 20, 30, 40], lbl: ['< 5%', '5–10', '10–20', '20–30', '30–40', '≥ 40%'], name: '% hari di atas 55', f: v => fmt(v) + '%'}};
+function provValues() { const idx = monthIdx(), sel = new Set(codesSel()), out = {};
+  D.provinces.forEach(p => { const cs = D.stations.filter(s => s.geo === p.id).map(s => s.code); if (!cs.length) { out[p.id] = {none: true}; return; } const on = cs.filter(c => sel.has(c)); if (!on.length) { out[p.id] = {off: true}; return; }
+    const a = agg(on, idx); out[p.id] = {a, v: S.metric === 'af' ? a.af : S.metric === 'pm' ? a.pm : a.excPct, n: on.length}; }); return out; }
+function cMap() { const {svg, hatch} = mapBase('#cMap'); const M = MAPM[S.metric], V = provValues();
+  D.provinces.forEach(p => { const v = V[p.id]; const fill = v.none ? hatch : (v.off || v.v == null) ? css('--land') : seqColor(v.v, M.bins);
+    const path = el('path', {d: p.d, class: 'prov' + (S.sel === p.id ? ' sel' : ''), fill, tabindex: v.none ? -1 : 0, role: 'button', 'aria-label': `${p.name}: ${v.none ? 'tidak ada stasiun' : v.off ? 'di luar filter' : M.f(v.v)}`}, svg);
+    hover(path, () => `<b>${p.name}</b>` + (v.none ? '<div>Tidak ada stasiun</div>' : v.off ? '<div>Di luar filter</div>' : row(M.name, M.f(v.v)) + row(`Kasus berlebih, ${groupLbl()}`, fmt(v.a.ex)) + row('Stasiun', v.n)));
+    const pick = () => { S.sel = S.sel === p.id ? null : p.id; notes(); cMap(); }; path.addEventListener('click', pick); path.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } }); });
+  const sel = new Set(codesSel()); D.stations.forEach(s => el('circle', {cx: s.x, cy: s.y, r: 4, fill: sel.has(s.code) ? css('--ink') : css('--bar-gray'), stroke: css('--card'), 'stroke-width': 1.5, 'pointer-events': 'none'}, svg));
+  const ranked = Object.entries(V).filter(([, v]) => v.v != null).sort((a, b) => b[1].v - a[1].v).slice(0, 3);
+  ranked.forEach(([id, v]) => { const st = D.stations.find(s => s.geo === id); const right = st.x > 820; text(svg, st.x + (right ? -9 : 9), st.y - 9, `${SHORT(PROV[id].name)} ${M.f(v.v)}`, 'lab-b halo', right ? 'end' : 'start', {style: 'font-size:16px'}); });
+  $('#mapSub').textContent = `${M.name} · ${periodLbl()}`;
+  $('#lgMap').innerHTML = M.lbl.map((l, i) => `<span><i class="sw" style="background:var(--s${i + 1})"></i>${l}</span>`).join('') + `<span>${swHatch}Tanpa stasiun</span>`;
+  const top = ranked[0]; $('#iMap').innerHTML = top ? `<b>Insight:</b> ${SHORT(PROV[top[0]].name)} tertinggi (${M.f(top[1].v)}). Provinsi bergaris tidak punya stasiun, bebannya tidak terlihat.` : '<b>Insight:</b> tidak ada provinsi pada filter ini.';
+  $$('#mapMetric button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.metric)); }
+function cTrend() { const idx = monthIdx(), cs = codesSel(); const vals = idx.map(i => agg(cs, [i]).ex); const ma = vals.map((v, i) => i < 2 ? null : (vals[i] + vals[i - 1] + vals[i - 2]) / 3); const haze = i => [8, 9, 10].includes(+D.months[idx[i]].slice(5));
+  combo('#cTrend', idx.map(i => D.months[i]), vals.map((v, i) => ({v, color: haze(i) ? css('--bar') : css('--bar-soft')})), {line: ma, xl: (m) => idx.length > 14 ? (m.endsWith('-01') ? m.slice(0, 4) : '') : MON[+m.slice(5) - 1], yf: kfmt,
+    tip: i => `<b>${MON[+D.months[idx[i]].slice(5) - 1]} ${D.months[idx[i]].slice(0, 4)}</b>${row('Kasus berlebih', fmt(vals[i]))}${row('Rata-rata 3 bulan', fmt(ma[i]))}`});
+  $('#trendSub').textContent = `${groupLbl()}, di atas ${c0Lbl()}`;
+  $('#lgTrend').innerHTML = '<span><i class="sw" style="background:var(--bar)"></i>Agu–Okt</span><span><i class="sw" style="background:var(--bar-soft)"></i>Bulan lain</span><span><i class="sw ln" style="background:var(--trend)"></i>Rata-rata 3 bulan</span>';
+  if (!vals.length) { $('#iTrend').innerHTML = ''; return; } const mx = vals.indexOf(Math.max(...vals)); const other = vals.filter((v, i) => !haze(i)); const avg = other.length ? other.reduce((a, b) => a + b, 0) / other.length : null;
+  $('#iTrend').innerHTML = `<b>Insight:</b> puncak ${MON[+D.months[idx[mx]].slice(5) - 1]} ${D.months[idx[mx]].slice(0, 4)} dengan ${fmt(vals[mx])} kasus${avg ? `, ${fmt(vals[mx] / avg, 1)}× rata-rata bulan di luar musim asap` : ''}.`; }
+function cBands() { const a = agg(codesSel(), monthIdx(), '25', 'both'); const tot = a.xb.reduce((p, q) => p + q, 0); const L = ['25–55 (lolos baku)', '55–150', '150–250', 'di atas 250'];
+  hbars('#cBands', a.xb.map((v, i) => ({label: L[i], v, bold: i === 0, color: i === 0 ? css('--bar') : css('--bar-gray'), vl: `${kfmt(v)} · ${fmt(tot ? v / tot * 100 : 0)}%`, tip: `<b>PM2.5 ${L[i]} µg/m³</b>${row('Kasus berlebih', fmt(v))}${row('Porsi', fmt(tot ? v / tot * 100 : 0, 1) + '%')}`})), {lw: 114, vw: 78, empty: 'Tidak ada kasus berlebih pada filter ini.'});
+  $('#iBands').innerHTML = tot ? `<b>Insight:</b> ${fmt(a.xb[0] / tot * 100)}% kasus berlebih terjadi saat PM2.5 25–55 µg/m³, hari yang dianggap aman oleh baku mutu.` : ''; }
+function cRank() { const V = provValues(), sel = codesSel(), idx = monthIdx(); const rows = Object.entries(V).filter(([, v]) => v.a && v.a.ex > 0).map(([id]) => { const cs = D.stations.filter(s => s.geo === id && sel.includes(s.code)).map(s => s.code); return {id, u: agg(cs, idx, S.c0, 'u5').ex, o: agg(cs, idx, S.c0, 'o60').ex}; }).sort((a, b) => (b.u + b.o) - (a.u + a.o)).slice(0, 7);
+  const segs = r => group() === 'u5' ? [{v: r.u, color: css('--bar')}] : group() === 'o60' ? [{v: r.o, color: css('--bar-gray')}] : [{v: r.u, color: css('--bar')}, {v: r.o, color: css('--bar-gray')}];
+  hbars('#cRank', rows.map(r => ({label: SHORT(PROV[r.id].name), segs: segs(r), vl: kfmt(group() === 'u5' ? r.u : group() === 'o60' ? r.o : r.u + r.o), tip: `<b>${PROV[r.id].name}</b>${row('Balita', fmt(r.u))}${row('Lansia', fmt(r.o))}`})), {lw: 104, vw: 44, empty: 'Tidak ada kasus berlebih pada filter ini.'});
+  $('#lgRank').innerHTML = (group() !== 'o60' ? '<span><i class="sw" style="background:var(--bar)"></i>Balita</span>' : '') + (group() !== 'u5' ? '<span><i class="sw" style="background:var(--bar-gray)"></i>Lansia</span>' : '');
+  const tot = rows.reduce((a, r) => a + r.u + r.o, 0); $('#iRank').innerHTML = rows.length ? `<b>Insight:</b> ${SHORT(PROV[rows[0].id].name)} menyumbang ${fmt((rows[0].u + rows[0].o) / tot * 100)}% dari ${rows.length} provinsi teratas.` : ''; }
+
+/* ---------- 02 ---------- */
+const HB = [15.5, 25, 55, 150, 250];
+function cHeat() { const order = ['ekstrem', 'gambut', 'kronis', 'bersih', 'tanpa-data']; const rows = selStations().sort((a, b) => order.indexOf(a.arch) - order.indexOf(b.arch) || (b.off || 0) - (a.off || 0)); const idx = monthIdx();
+  if (!rows.length || !idx.length) return emptyIn('#cHeat', 'Tidak ada data untuk filter ini.');
+  const {svg, w, h} = frame('#cHeat'); const lw = 64, cw = (w - lw) / idx.length, ch = Math.min(22, (h - 16) / rows.length);
+  const pat = el('pattern', {id: 'hh', width: 5, height: 5, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)'}, el('defs', {}, svg)); el('rect', {width: 5, height: 5, fill: css('--land')}, pat); el('line', {x1: 0, y1: 0, x2: 0, y2: 5, stroke: css('--hatch'), 'stroke-width': 1.6}, pat);
+  rows.forEach((s, r) => { const yy = r * ch; el('rect', {x: 2, y: yy + ch / 2 - 4, width: 8, height: 8, rx: 2, fill: AC(s.arch)}, svg); text(svg, lw - 5, yy + ch / 2 + 3.5, s.code, 'lab', 'end');
+    idx.forEach((i, c) => { const v = D.monthly[s.code][i].pm; const cell = el('rect', {x: lw + c * cw, y: yy, width: Math.max(1, cw - 1.5), height: ch - 1.5, rx: 2, fill: v == null ? 'url(#hh)' : seqColor(v, HB)}, svg);
+      hover(cell, `<b>${s.code} · ${s.kota}</b>${row(MON[+D.months[i].slice(5) - 1] + ' ' + D.months[i].slice(0, 4), v == null ? 'data tidak valid' : fmt(v) + ' µg/m³')}${row('Tipe wilayah', ARCH[s.arch])}`); }); });
+  const ax = el('g', {class: 'axis'}, svg); idx.forEach((i, c) => { const m = D.months[i]; const lab = idx.length > 14 ? (m.endsWith('-01') ? m.slice(0, 4) : m.endsWith('-08') ? 'Agu' : '') : MON[+m.slice(5) - 1]; if (lab) text(ax, lw + c * cw + cw / 2, rows.length * ch + 12, lab, '', 'middle'); });
+  $('#lgHeat').innerHTML = ['< 15,5', '15,5–25', '25–55', '55–150', '150–250', '> 250'].map((l, i) => `<span><i class="sw" style="background:var(--s${i + 1})"></i>${l}</span>`).join('') + `<span>${swHatch.replace('sw"', 'sw" ')}tidak valid</span>` + ARCHS.map(a => `<span><i class="sw" style="background:${AC(a)}"></i>${ARCH[a]}</span>`).join('');
+  let best = null; rows.forEach(s => idx.forEach(i => { const v = D.monthly[s.code][i].pm; if (v != null && (!best || v > best.v)) best = {v, s, i}; }));
+  $('#iHeat').innerHTML = best ? `<b>Insight:</b> terparah ${best.s.code} ${MON[+D.months[best.i].slice(5) - 1]} ${D.months[best.i].slice(0, 4)} (${fmt(best.v)} µg/m³). Blok Agu–Okt berulang tiap tahun di wilayah gambut; Jakarta tinggi sepanjang tahun.` : ''; }
+function cSeason() { const cs = codesSel(); const base = [], y26 = []; const yrs = S.years;
+  for (let mo = 1; mo <= 12; mo++) { const ib = D.months.map((m, i) => [m, i]).filter(([m]) => +m.slice(5) === mo && m < '2026').map(x => x[1]); const i6 = D.months.map((m, i) => [m, i]).filter(([m]) => +m.slice(5) === mo && m.startsWith('2026')).map(x => x[1]); base.push(agg(cs, ib).pm); y26.push(i6.length ? agg(cs, i6).pm : null); }
+  combo('#cSeason', MON, base.map((v, i) => ({v: v || 0, color: i >= 7 && i <= 9 ? css('--bar') : css('--bar-soft')})), {line: y26, refs: [{v: 55, cls: 'std55', label: 'baku 55'}], xl: (c, i) => i % 2 === 0 ? c : '', yf: v => fmt(v), tip: i => `<b>${MON[i]}</b>${row('Rata-rata 2024–2025', fmt(base[i], 1))}${row('2026', y26[i] == null ? 'belum ada' : fmt(y26[i], 1))}`});
+  $('#lgSeason').innerHTML = '<span><i class="sw" style="background:var(--bar)"></i>Agu–Okt 2024–25</span><span><i class="sw" style="background:var(--bar-soft)"></i>Bulan lain</span><span><i class="sw ln" style="background:var(--trend)"></i>2026</span>';
+  const g = (y26[9] && base[9]) ? (y26[9] / base[9] - 1) * 100 : null; $('#iSeason').innerHTML = g != null ? `<b>Insight:</b> Oktober 2026 ${fmt(g)}% lebih tinggi dari rata-rata Oktober dua tahun sebelumnya.` : ''; }
+function cEsc() { const cs = new Set(codesSel()); const val = (c, y) => agg([c], D.months.map((m, i) => [m, i]).filter(([m]) => m.startsWith(y) && +m.slice(5) >= 8 && +m.slice(5) <= 10).map(x => x[1])).pm;
+  const rows = D.stations.filter(s => cs.has(s.code) && s.h26 != null).map(s => ({s, v: YEARS.map(y => val(s.code, y))})).filter(r => r.v[2] != null).sort((a, b) => b.v[2] - a.v[2]).slice(0, 6);
+  if (!rows.length) return emptyIn('#cEsc', 'Tidak ada wilayah dengan musim asap pada filter ini.');
+  const {svg, w, h} = frame('#cEsc'); const m = {l: 34, r: 4, t: 16, b: 20}; const ymax = nice(Math.max(...rows.flatMap(r => r.v)) * 1.08); const y = lin(0, ymax, h - m.b, m.t);
+  yGrid(svg, y, [0, ymax / 2, ymax], m.l, w - m.r); el('line', {x1: m.l, x2: w - m.r, y1: y(55), y2: y(55), class: 'std55'}, svg);
+  const gw = (w - m.l - m.r) / rows.length, bw = gw * .26, cols = [css('--bar-gray'), css('--bar-soft'), css('--bar')];
+  rows.forEach((r, i) => { r.v.forEach((v, k) => { const b = el('rect', {x: m.l + gw * i + gw * .11 + bw * k, width: bw - 1, y: y(v || 0), height: Math.max(0, h - m.b - y(v || 0)), rx: 2, fill: cols[k]}, svg); hover(b, `<b>${r.s.code} · ${r.s.kota}</b>${YEARS.map((yy, j) => row('Agu–Okt ' + yy, fmt(r.v[j]) + ' µg/m³')).join('')}`); });
+    text(svg, m.l + gw * i + gw / 2, y(r.v[2]) - 4, fmt(r.v[2]), 'lab-b', 'middle'); text(svg, m.l + gw * i + gw / 2, h - 5, r.s.code, 'lab', 'middle', {style: 'font-size:9.5px'}); });
+  $('#lgEsc').innerHTML = YEARS.map((y, k) => `<span><i class="sw" style="background:${cols[k]}"></i>${y}</span>`).join('') + '<span><i class="sw ln" style="background:var(--ink2)"></i>baku 55</span>';
+  const t = rows[0]; $('#iEsc').innerHTML = `<b>Insight:</b> ${t.s.code} naik ${fmt(t.v[2] / t.v[0], 1)}× dalam dua tahun, dari ${fmt(t.v[0])} menjadi ${fmt(t.v[2])} µg/m³.`; }
+function cDiurnal() { const show = ARCHS.filter(a => S.archs.includes(a) && D.diurnal[a]); if (!show.length) return emptyIn('#cDiurnal', 'Tidak ada tipe wilayah terpilih.');
+  const ser = show.map(a => ({name: ARCH[a].split(' ')[0], color: AC(a), pts: D.diurnal[a]}));
+  lines('#cDiurnal', ser, {ymin: .7, ymax: 1.5, ticks: [.8, 1, 1.2, 1.4], tf: v => fmt(v, 1) + '×', xticks: [0, 6, 12, 18, 23], xf: (i, l) => (l ? 'Pukul ' : '') + String(i).padStart(2, '0') + (l ? '.00' : ''), band: [7, 9], unit: '×', r: 64});
+  $('#lgDiurnal').innerHTML = '<span><i class="sw" style="background:var(--red-tint);outline:1px solid var(--bar-soft)"></i>07.00–09.00</span>' + ser.map(s => `<span><i class="sw ln" style="background:${s.color}"></i>${s.name}</span>`).join('');
+  $('#iDiurnal').innerHTML = '<b>Insight:</b> puncak pagi 07–09 di kota dan wilayah bersih. Saat asap, Kalteng kotor sepanjang hari.'; }
+
+/* ---------- 03 ---------- */
+function cArch() { const sel = new Set(codesSel());
+  scatter('#cArch', D.stations.filter(s => s.off).map(s => ({x: s.off, y: s.mult, color: AC(s.arch), on: sel.has(s.code), r: 6, label: s.code, tip: `<b>${s.code} · ${s.kota}</b>${row('Tipe wilayah', ARCH[s.arch])}${row('PM2.5 Jan–Jun', fmt(s.off, 1))}${row('Lonjakan Agu–Okt', fmt(s.mult, 1) + '×')}${row('Eskalasi 2024→2026', fmt(s.esc, 1) + '×')}`})),
+    {xlog: true, x0: 8, x1: 70, xt: [10, 15, 25, 40, 60], ylog: true, y0: .9, y1: 9, yt: [1, 2, 4, 8], yf: v => v + '×', xl: 'PM2.5 di luar musim asap, µg/m³ →', yl: '↑ lonjakan saat musim asap', vref: [{v: 25, cls: 'thr25'}],
+     quads: [{x: 'l', y: 't', t: 'Bersih, lalu meledak saat asap'}, {x: 'r', y: 't', t: 'Kotor dan melonjak (beban ganda)'}]});
+  $('#lgArch').innerHTML = ARCHS.map(a => `<span><i class="sw dot" style="background:${AC(a)}"></i>${ARCH[a]}</span>`).join('') + '<span><i class="sw ln" style="background:var(--thr)"></i>ambang 25</span>';
+  $('#iArch').innerHTML = '<b>Insight:</b> KTG-01 berlabel "Urban Background" tapi lonjakannya 7×; Jakarta dan Medan kotor tanpa musim.'; }
+function cTraffic() { const sel = new Set(codesSel()); scatter('#cTraffic', D.stations.filter(s => s.off).map(s => ({x: s.traffic, y: s.off, color: AC(s.arch), on: sel.has(s.code), r: 4.5, label: ['JKT-03', 'BGR-02', 'MDN-01'].includes(s.code) ? s.code : '', tip: `<b>${s.code}</b>${row('Kendaraan/jam', fmt(s.traffic))}${row('Jarak ke jalan', fmt(s.road) + ' m')}${row('PM2.5 Jan–Jun', fmt(s.off, 1))}`})),
+    {x0: 0, x1: 3400, xt: [0, 1000, 2000, 3000], y0: 0, y1: 65, yt: [0, 25, 55], xl: 'kendaraan/jam →', yl: '↑ PM2.5, µg/m³', fit: true});
+  $('#iTraffic').innerHTML = '<b>Insight:</b> makin padat lalu lintas, makin kotor. Bogor (BGR-02) pengecualian karena hujan.'; }
+function cArchBar() { const off = D.months.map((m, i) => i).filter(i => +D.months[i].slice(5) <= 6), hz = D.months.map((m, i) => i).filter(i => [8, 9, 10].includes(+D.months[i].slice(5)));
+  const rows = ARCHS.filter(a => S.archs.includes(a)).map(a => { const cs = selStations().filter(s => s.arch === a).map(s => s.code); return {a, o: agg(cs, off).pm, h: agg(cs, hz).pm}; }).filter(r => r.o != null);
+  if (!rows.length) return emptyIn('#cArchBar', 'Tidak ada tipe wilayah pada filter ini.');
+  const {svg, w, h} = frame('#cArchBar'); const m = {l: 32, r: 4, t: 16, b: 30}; const ymax = nice(Math.max(...rows.flatMap(r => [r.o, r.h])) * 1.08); const y = lin(0, ymax, h - m.b, m.t);
+  yGrid(svg, y, [0, ymax / 2, ymax], m.l, w - m.r); el('line', {x1: m.l, x2: w - m.r, y1: y(55), y2: y(55), class: 'std55'}, svg); const gw = (w - m.l - m.r) / rows.length, bw = gw * .34;
+  rows.forEach((r, i) => { [[r.o, css('--bar-gray')], [r.h, AC(r.a)]].forEach(([v, c], k) => { const b = el('rect', {x: m.l + gw * i + gw * .14 + bw * k, width: bw - 2, y: y(v), height: h - m.b - y(v), rx: 2, fill: c}, svg); hover(b, `<b>${ARCH[r.a]}</b>${row('Jan–Jun', fmt(r.o, 1))}${row('Agu–Okt', fmt(r.h, 1))}`); text(svg, m.l + gw * i + gw * .14 + bw * k + bw / 2 - 1, y(v) - 3, fmt(v), 'lab-b', 'middle'); });
+    const wd = ARCH[r.a].split(' '); text(svg, m.l + gw * i + gw / 2, h - 16, wd[0], 'lab', 'middle'); text(svg, m.l + gw * i + gw / 2, h - 4, wd.slice(1).join(' '), 'lab', 'middle'); });
+  $('#lgArchBar').innerHTML = '<span><i class="sw" style="background:var(--bar-gray)"></i>Jan–Jun</span><span><i class="sw" style="background:var(--a-gambut)"></i>Agu–Okt</span>';
+  $('#iArchBar').innerHTML = '<b>Insight:</b> kota hampir rata sepanjang tahun, wilayah gambut melonjak 3–7× saat musim asap.'; }
+function cImp() { hbars('#cImp', D.importance.map(([l, v]) => ({label: l, v, vl: fmt(v, 2), bold: v > .5, color: ['Kelembapan', 'Suhu', 'Kecepatan angin'].includes(l) ? css('--bar-gray') : css('--bar')})), {lw: 104, vw: 40, dec: 2});
+  $('#iImp').innerHTML = '<b>Insight:</b> musim dan lokasi menentukan; suhu, kelembapan, dan angin lokal di bawah 0,1.'; }
+function cWind() { const W = D.wind[S.wind]; const L = ['U', 'TL', 'T', 'Tg', 'S', 'BD', 'B', 'BL'], N = ['utara', 'timur laut', 'timur', 'tenggara', 'selatan', 'barat daya', 'barat', 'barat laut'];
+  const valid = W.pm.filter(v => v != null); const mx = Math.max(...valid), mn = Math.min(...valid);
+  combo('#cWind', L, W.pm.map(v => ({v: v || 0, color: v === mx ? css('--bar') : css('--bar-soft'), label: v === mx ? fmt(v) : ''})), {yf: v => fmt(v), tip: i => `<b>Angin dari ${N[i]}</b>${row('PM2.5', W.pm[i] == null ? 'tidak ada' : fmt(W.pm[i], 1) + ' µg/m³')}${row('Frekuensi', fmt(W.share[i], 1) + '% jam')}`});
+  $('#iWind').innerHTML = mx / mn > 1.15 ? `<b>Insight:</b> di ${S.wind}, angin dari ${N[W.pm.indexOf(mx)]} membawa PM2.5 ${fmt(mx / mn, 1)}× dibanding dari ${N[W.pm.indexOf(mn)]}.` : `<b>Insight:</b> di ${S.wind}, PM2.5 hampir sama dari semua arah: sumbernya lokal.`;
+  $$('#windSt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.wind)); }
+
+/* ---------- 04 ---------- */
+const C0S = ['15', '25', '37.5', '55'];
+function cCurve() { const {svg, w, h} = frame('#cCurve'); const m = {l: 34, r: 84, t: 10, b: 22}; const x = lin(5, 300, m.l, w - m.r), y = lin(.8, 6, h - m.b, m.t);
+  el('rect', {x: x(25), y: m.t, width: x(55) - x(25), height: h - m.t - m.b, fill: css('--red-tint')}, svg); text(svg, (x(25) + x(55)) / 2, m.t + 11, 'lolos baku', 'lab', 'middle');
+  yGrid(svg, y, [1, 2, 3, 4, 5, 6], m.l, w - m.r, v => v + '×'); const ax = el('g', {class: 'axis'}, svg); [25, 55, 100, 150, 200, 250, 300].forEach(t => text(ax, x(t), h - 7, t, '', 'middle'));
+  el('line', {x1: x(25), x2: x(25), y1: m.t, y2: h - m.b, class: 'thr25'}, svg); el('line', {x1: x(55), x2: x(55), y1: m.t, y2: h - m.b, class: 'std55'}, svg);
+  const c0 = +S.c0; el('line', {x1: x(c0), x2: x(c0), y1: m.t, y2: h - m.b, stroke: css('--ink'), 'stroke-width': 2}, svg); text(svg, x(c0) + 5, h - m.b - 8, 'batas ' + S.c0, 'lab-b halo');
+  const ser = [['resp_admissions_under5', 'ISPA balita', css('--bar'), 2.6], ['resp_admissions_over60', 'ISPA lansia', css('--trend'), 2.2], ['cvd', 'Jantung', css('--bar-gray'), 2]];
+  const ends = []; ser.forEach(([k, n, c, sw]) => { const P = D.curves[k]; drawLine(el('path', {d: P.map(([p, r], i) => (i ? 'L' : 'M') + x(p) + ',' + y(r)).join(''), fill: 'none', stroke: c, 'stroke-width': sw}, svg)); ends.push({y: y(P[P.length - 1][1]), n}); });
+  ends.sort((a, b) => a.y - b.y).forEach((e, i, a) => { if (i && e.y - a[i - 1].y < 12) e.y = a[i - 1].y + 12; text(svg, w - m.r + 5, e.y + 3, e.n, 'lab-b'); });
+  const hv = el('rect', {x: m.l, y: m.t, width: w - m.l - m.r, height: h - m.t - m.b, fill: 'transparent'}, svg);
+  hv.addEventListener('mousemove', e => { const r = svg.getBoundingClientRect(); const pm = 5 + ((e.clientX - r.left) * w / r.width - m.l) / (w - m.l - m.r) * 295; const near = k => D.curves[k].reduce((a, b) => Math.abs(b[0] - pm) < Math.abs(a[0] - pm) ? b : a); showTip(e, `<b>PM2.5 ≈ ${fmt(near('cvd')[0])} µg/m³</b>` + ser.map(([k, n]) => row(n, fmt(near(k)[1], 2) + '×')).join('')); });
+  hv.addEventListener('mouseleave', hideTip); const a = agg(codesSel(), monthIdx());
+  $('#lgCurve').innerHTML = '<span><i class="sw ln" style="background:var(--thr)"></i>ambang 25</span><span><i class="sw ln" style="background:var(--ink2)"></i>baku 55</span><span><i class="sw ln" style="background:var(--ink)"></i>batas skenario</span>';
+  $('#iCurve').innerHTML = `<b>Insight:</b> dengan batas ${S.c0} µg/m³ ada ${fmt(a.ex)} kasus ISPA ${groupLbl()} berlebih. Geser slider untuk membandingkan skenario.`; }
+function cEvent() { const E = D.event; lines('#cEvent', [{name: 'Balita', color: css('--bar'), pts: E.u5.map(p => p[1])}, {name: 'Lansia', color: css('--trend'), pts: E.o60.map(p => p[1])}, {name: 'Jantung', color: css('--bar-gray'), pts: E.cvd.map(p => p[1])}],
+  {ymin: .6, ymax: 2.3, ticks: [1, 1.5, 2], tf: v => fmt(v, 1) + '×', xticks: [0, 7, 14], xf: (i, l) => { const k = E.u5[i][0]; return k === 0 ? (l ? 'Hari lonjakan' : 'H0') : (k > 0 ? 'H+' : 'H') + k; }, refs: [{v: 1, cls: 'std55', label: 'normal'}], band: [6.6, 7.4], unit: '×', r: 52});
+  $('#lgEvent').innerHTML = '<span><i class="sw" style="background:var(--red-tint);outline:1px solid var(--bar-soft)"></i>hari lonjakan PM2.5</span>'; $('#iEvent').innerHTML = '<b>Insight:</b> admisi naik di hari lonjakan (×1,8), bukan dua hari setelahnya.'; }
+function cPct() { hbars('#cPct', Object.entries(D.pct2x).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({label: k, v, vl: '+' + fmt(v) + '%', bold: k.startsWith('ISPA'), color: k.startsWith('ISPA') ? css('--bar') : css('--bar-gray')})), {lw: 92, vw: 42});
+  $('#iPct').innerHTML = '<b>Insight:</b> balita (+57%) dan lansia (+55%) sama rentan; PPOK paling sensitif.'; }
+function cRS() { const rows = selStations().filter(s => s.peak100).sort((a, b) => b.peak100 - a.peak100).slice(0, 7); if (!rows.length) return emptyIn('#cRS', 'Tidak ada RS untuk filter ini.');
+  const {svg, w, h} = frame('#cRS'); const lw = 58, vw = 86, x = lin(0, nice(Math.max(...rows.map(r => r.peak100))), lw, w - vw), rh = (h - 14) / rows.length;
+  const g = el('g', {class: 'axis'}, svg); [0, 50, 100].forEach(t => { if (x(t) <= w - vw + 1) { el('line', {x1: x(t), x2: x(t), y1: 0, y2: rows.length * rh, class: 'gl'}, g); text(g, x(t), rows.length * rh + 11, t, '', 'middle'); } });
+  rows.forEach((s, i) => { const yy = i * rh + rh / 2; text(svg, lw - 6, yy + 4, s.code, 'lab', 'end'); const ln = el('line', {x1: x(s.off100), x2: x(s.off100), y1: yy, y2: yy, stroke: css('--bar-soft'), 'stroke-width': 4, 'stroke-linecap': 'round'}, svg); grow(ln, 'x2', x(s.peak100));
+    el('circle', {cx: x(s.off100), cy: yy, r: 4, fill: css('--bar-gray')}, svg); el('circle', {cx: x(s.peak100), cy: yy, r: 5, fill: css('--bar')}, svg); text(svg, x(s.peak100) + 9, yy + 4, `${fmt(s.peak100 / s.off100, 1)}× · ${s.kelas.replace(' (Khusus Paru)', '')}`, 'lab');
+    const hit = el('rect', {x: 0, y: yy - rh / 2, width: w, height: rh, fill: 'transparent'}, svg); hover(hit, `<b>${s.code} · ${s.kota}</b>${row('Normal (Jan–Jun)', fmt(s.off100, 1))}${row('Puncak 7 hari', fmt(s.peak100, 1))}${row('Kapasitas', s.beds + ' TT, ' + s.kelas)}`); });
+  $('#lgRS').innerHTML = '<span><i class="sw dot" style="background:var(--bar-gray)"></i>Normal</span><span><i class="sw dot" style="background:var(--bar)"></i>Puncak 7 hari</span>';
+  $('#iRS').innerHTML = `<b>Insight:</b> ${rows[0].code} ${rows[0].kota} mencapai ${fmt(rows[0].peak100)} admisi per 100 tempat tidur per hari saat puncak asap.`; }
+function cYear() { const cs = codesSel(); const v = YEARS.map(y => { const ii = D.months.map((m, i) => [m, i]).filter(([m]) => m.startsWith(y) && +m.slice(5) <= 10 && S.months.includes(+m.slice(5))).map(x => x[1]); return {u: agg(cs, ii, S.c0, 'u5').ex, o: agg(cs, ii, S.c0, 'o60').ex}; });
+  const tot = v.map(r => group() === 'u5' ? r.u : group() === 'o60' ? r.o : r.u + r.o); if (!Math.max(...tot)) return emptyIn('#cYear', 'Tidak ada kasus berlebih pada filter ini.');
+  const {svg, w, h} = frame('#cYear'); const m = {l: 40, r: 10, t: 18, b: 20}; const ymax = nice(Math.max(...tot) * 1.1); const y = lin(0, ymax, h - m.b, m.t);
+  yGrid(svg, y, [0, ymax / 2, ymax], m.l, w - m.r, kfmt); const gw = (w - m.l - m.r) / 3, bw = gw * .46;
+  v.forEach((r, i) => { const x0 = m.l + gw * i + (gw - bw) / 2; let acc = 0; const segs = group() === 'u5' ? [[r.u, css('--bar')]] : group() === 'o60' ? [[r.o, css('--bar-gray')]] : [[r.u, css('--bar')], [r.o, css('--bar-gray')]];
+    segs.forEach(([val, c]) => { const b = el('rect', {x: x0, width: bw, y: y(acc + val), height: Math.max(0, y(acc) - y(acc + val) - 1), rx: 2, fill: c}, svg); hover(b, `<b>Jan–Okt ${YEARS[i]}</b>${row('Balita', fmt(r.u))}${row('Lansia', fmt(r.o))}`); acc += val; });
+    text(svg, x0 + bw / 2, y(acc) - 5, fmt(tot[i]), 'lab-b', 'middle'); text(svg, x0 + bw / 2, h - 5, YEARS[i], 'lab', 'middle');
+    if (i && tot[i - 1]) { const gp = (tot[i] / tot[i - 1] - 1) * 100; text(svg, m.l + gw * i, y(Math.max(tot[i], tot[i - 1])) - 14, (gp >= 0 ? '+' : '') + fmt(gp) + '%', 'lab-b halo', 'middle', {fill: css('--red-ink')}); } });
+  $('#lgYear').innerHTML = (group() !== 'o60' ? '<span><i class="sw" style="background:var(--bar)"></i>Balita</span>' : '') + (group() !== 'u5' ? '<span><i class="sw" style="background:var(--bar-gray)"></i>Lansia</span>' : '');
+  $('#iYear').innerHTML = tot[0] ? `<b>Insight:</b> kasus berlebih Jan–Okt naik ${fmt((tot[2] / tot[0] - 1) * 100)}% dari 2024 ke 2026, seiring musim asap yang makin pekat.` : ''; }
+
+/* ---------- 05 ---------- */
+const bad = s => s.cap < 85 || s.issue.startsWith('Macet');
+function cCover() { const {svg, hatch} = mapBase('#cCover');
+  D.provinces.forEach(p => { const sts = D.stations.filter(s => s.geo === p.id); const st = !sts.length ? 'none' : sts.some(bad) ? 'bad' : 'ok';
+    const path = el('path', {d: p.d, class: 'prov', fill: st === 'none' ? hatch : st === 'bad' ? css('--s3') : css('--s1')}, svg); hover(path, `<b>${p.name}</b>` + (st === 'none' ? '<div>Tidak ada stasiun</div>' : sts.map(s => row(s.code, fmt(s.cap, 0) + '% valid')).join(''))); });
+  D.stations.forEach(s => { const c = el('circle', {cx: s.x, cy: s.y, r: 5, fill: bad(s) ? css('--bar') : css('--ink'), stroke: css('--card'), 'stroke-width': 1.6}, svg); hover(c, `<b>${s.code} · ${s.kota}</b>${row('Jam valid', fmt(s.cap, 1) + '%')}${row('Status alat', s.status)}${row('Stasiun terdekat', fmt(s.nn) + ' km')}${s.issue ? `<div>${s.issue}</div>` : ''}`); });
+  [['MER-01', '1.319 km ke stasiun terdekat'], ['JMB-02', 'JMB-02 rusak']].forEach(([c, t]) => { const s = ST[c]; const r = s.x > 820; text(svg, s.x + (r ? -9 : 9), s.y - 9, t, 'lab-b halo', r ? 'end' : 'start', {style: 'font-size:16px'}); });
+  $('#lgCover').innerHTML = `<span><i class="sw" style="background:var(--s1)"></i>Semua stasiun layak</span><span><i class="sw" style="background:var(--s3)"></i>Ada stasiun bermasalah</span><span>${swHatch}Tanpa stasiun</span><span><i class="sw dot" style="background:var(--bar)"></i>Stasiun tidak layak</span>`;
+  $('#iCover').innerHTML = '<b>Insight:</b> 13 provinsi tanpa stasiun, termasuk seluruh Nusa Tenggara dan Maluku; dua stasiun Papua berjarak lebih dari 1.200 km.'; }
+function cCap() { const rows = selStations().sort((a, b) => a.cap - b.cap);
+  hbars('#cCap', rows.map(s => ({label: s.code, v: s.cap, bold: bad(s), vl: fmt(s.cap, 0) + '%', color: bad(s) ? css('--bar') : css('--bar-gray'), tip: `<b>${s.code} · ${s.kota}</b>${row('Jam valid', fmt(s.cap, 1) + '%')}${row('Status alat', s.status)}${s.issue ? `<div>${s.issue}</div>` : ''}`})), {lw: 56, vw: 36, max: 100, refs: [{v: 85, cls: 'thr25'}]});
+  $('#iCap').innerHTML = '<b>Insight:</b> BJB-01 turun ke 70% setelah sensor macet terdeteksi, padahal alat melabelinya 100% VALID.'; }
+function cIKU() { const rows = selStations().filter(s => s.iku != null && s.iku >= 75 && s.exc25 > 0).sort((a, b) => b.exc25 - a.exc25);
+  hbars('#cIKU', rows.map(s => ({label: s.code, v: s.exc25, vl: `${fmt(s.exc25)} hari · IKU ${fmt(s.iku)}`, color: AC(s.arch), tip: `<b>${s.code} · ${s.kota}</b>${row('IKU 2025', fmt(s.iku) + ' (baik)')}${row('Hari PM2.5 > 55', fmt(s.exc25))}`})), {lw: 54, vw: 94, empty: 'Tidak ada stasiun ber-IKU baik yang melebihi baku PM2.5.'});
+  $('#iIKU').innerHTML = '<b>Insight:</b> IKU hanya membaca SO2 dan NO2, jadi 92 hari asap tetap tampak baik.'; }
+function cAct() { const A = [['Perbaiki', 'JMB-02 Muaro Jambi', 'Ganti sensor', 'Baseline tertinggi (68,9 µg/m³), 99,5% data rusak', 'Segera'], ['Perbaiki', 'PLB-01, MDN-01, MER-01', 'Pulihkan pengiriman data', 'Data valid hanya 20–80%', 'Segera'],
+  ['Perbaiki QC', 'Semua stasiun', 'Aturan flatline ≥ 6 jam', 'BJB-01 lolos 9 bulan berlabel VALID', 'Bulan ini'], ['Relokasi', 'KTG-02 Sampit', 'Pindah ke provinsi tanpa stasiun', 'Identik dengan KTG-01', 'Kuartal ini'], ['Tambah', 'Nusa Tenggara, Maluku, Sulawesi', 'Bangun stasiun baru', '13 provinsi tanpa stasiun', 'Tahun anggaran']];
+  $('#cAct').innerHTML = `<table class="t"><thead><tr><th>Aksi</th><th>Lokasi</th><th>Langkah</th><th>Alasan dari data</th><th>Waktu</th></tr></thead><tbody>${A.map(a => `<tr><td><span class="tag">${a[0]}</span></td><td><b>${a[1]}</b></td><td>${a[2]}</td><td>${a[3]}</td><td><span class="tag g">${a[4]}</span></td></tr>`).join('')}</tbody></table>`; }
+
+const DRAW = {ringkasan: [cMap, cTrend, cBands, cRank], waktu: [cHeat, cSeason, cEsc, cDiurnal], pemicu: [cArch, cTraffic, cArchBar, cImp, cWind], dampak: [cCurve, cEvent, cPct, cRS, cYear], jaringan: [cCover, cCap, cIKU, cAct]};
+function drawPage() { DRAW[S.page].forEach(f => { try { f(); } catch (e) { console.error(f.name, e); } }); }
+
+/* ---------- tooltip cara membaca per grafik ---------- */
+const HOW = {map: 'Warna = metrik terpilih, makin gelap makin buruk. Bergaris = tidak ada stasiun. Titik = stasiun. Klik provinsi untuk profil. Batas provinsi: BAKOSURTANAL (34 provinsi).',
+  trend: 'Batang = kasus berlebih per bulan. Merah tua = Agu–Okt. Garis = rata-rata 3 bulan.', bands: 'Kasus berlebih dikelompokkan menurut PM2.5 hari itu (acuan ambang 25, balita + lansia). Merah = hari yang lolos baku mutu 55.',
+  rank: 'Provinsi diurutkan dari kasus berlebih terbanyak. Merah = balita, abu = lansia.', heat: 'Baris = stasiun, kolom = bulan. Makin gelap makin kotor. Kotak kiri = tipe wilayah. Bergaris = bulan tanpa hari valid (minimal 18 jam data).',
+  season: 'Batang = rata-rata tiap bulan kalender 2024–2025. Garis = 2026. Garis di atas batang = tahun ini lebih buruk.', esc: 'Tiga batang per wilayah: 2024, 2025, 2026. Garis putus-putus = baku 55.',
+  diurnal: '1,0× = rata-rata harian. Jam dihitung waktu setempat (WIB, WITA, WIT).', arch: 'Kanan = kotor sepanjang tahun. Atas = lonjakan besar saat musim asap. Warna = tipe wilayah hasil pengelompokan k-means.',
+  traffic: 'Tiap titik = stasiun. Garis putus-putus = tren. Korelasi Spearman 0,76.', archbar: 'Abu = Jan–Jun, berwarna = Agu–Okt. Selisih tinggi batang = besar lonjakan musim asap.', imp: 'Makin panjang batang, makin besar kontribusi faktor dalam model gradient boosting yang memprediksi PM2.5 harian.',
+  wind: 'Batang = rata-rata PM2.5 saat angin datang dari arah tersebut (U = utara, Tg = tenggara, BL = barat laut).', curve: '1× = risiko pada PM2.5 15. Pita = hari lolos baku (25–55). Garis hitam = batas skenario dari slider. Model: Poisson GLM, efek tetap RS, kontrol hari, suhu, tahun.',
+  event: 'H0 = hari PM2.5 melonjak. Di atas 1× = admisi lebih tinggi dari minggu sebelumnya. Dihitung dari 49 kejadian lonjakan.', pct: 'Persentase kenaikan kasus bila PM2.5 naik dua kali lipat, misalnya 25 menjadi 50.',
+  rs: 'Titik abu = normal (rata-rata Jan–Jun), titik merah = puncak rata-rata 7 hari.', year: 'Batang = kasus berlebih Jan–Okt tiap tahun agar sebanding. Angka merah = perubahan dari tahun sebelumnya.',
+  cover: 'Warna = status stasiun di provinsi. Titik merah = stasiun tidak layak.', cap: 'Batang = % jam valid setelah QC. Garis kuning = batas layak 85%. Merah = tidak layak.', iku: 'Hari PM2.5 di atas 55 pada 2025, untuk stasiun yang IKU-nya tergolong baik (≥ 75).', act: 'Urutan prioritas: perbaiki data, relokasi, lalu tambah stasiun.'};
+
+/* ---------- dokumentasi ---------- */
+const GUIDE = {ringkasan: ['Seberapa besar beban kesehatan akibat udara kotor, di mana, dan apa yang harus dilakukan.', ['Baca Temuan Kritis di bawah judul.', 'KPI: jumlah kasus berlebih, porsi pasien, dan yang tercegah bila patuh baku 55.', 'Peta: ganti metrik di header peta, klik provinsi untuk profil.', 'Tren: merah tua = musim asap.', 'Temuan & Rekomendasi: aksi untuk pengguna.']],
+  waktu: ['Kapan dan di mana pencemaran paling kritis.', ['Kalender: cari blok gelap Agu–Okt yang berulang.', 'Pola musiman: garis 2026 di atas batang = tahun ini lebih buruk.', 'Musim asap per tahun: batang naik = eskalasi.', 'Pola jam: kapan imbauan paling efektif.']],
+  pemicu: ['Faktor yang menentukan level dan lonjakan PM2.5.', ['Peta tipe wilayah: kanan = kronis, atas = musiman.', 'Lalu lintas: titik naik ke kanan = makin padat makin kotor.', 'Faktor: musim dan lokasi jauh di atas cuaca lokal.', 'Arah angin: pilih stasiun di header kartu.']],
+  dampak: ['Berapa pasien bertambah, siapa paling rentan, dan kapan mereka datang.', ['Kurva: geser slider skenario batas.', 'Kapan pasien datang: lonjakan di H0.', 'Kerentanan: balita dan lansia setara.', 'Tekanan RS: RS kecil di wilayah gambut paling tertekan.']],
+  jaringan: ['Data mana yang bisa dipercaya, dan stasiun mana diperbaiki, dipindah, atau ditambah.', ['Peta cakupan: bergaris = tanpa stasiun.', 'Kelayakan: merah = di bawah 85% atau macet.', 'IKU: indeks resmi tidak membaca PM2.5.', 'Rencana aksi: urutan prioritas.']]};
+const TERMS = [['PM2.5', 'Partikel udara berdiameter di bawah 2,5 mikrometer. Cukup kecil untuk masuk ke paru-paru dan aliran darah.'], ['PM10', 'Partikel di bawah 10 mikrometer. Rasio PM2.5/PM10 tinggi menandakan asap pembakaran.'], ['µg/m³', 'Mikrogram per meter kubik udara, satuan konsentrasi polutan.'],
+  ['Baku mutu 55', 'Batas PM2.5 rata-rata 24 jam menurut PP 22/2021. Tahunan: 15 µg/m³.'], ['Pedoman WHO 15', 'Batas PM2.5 harian WHO 2021 (tahunan 5 µg/m³).'], ['Ambang 25', 'Level PM2.5 harian saat rawat inap mulai naik di data ini. Setara target antara WHO (IT-4).'],
+  ['ISPU', 'Indeks Standar Pencemar Udara (Permen LHK 14/2020): Baik, Sedang, Tidak Sehat, Sangat Tidak Sehat, Berbahaya.'], ['IKU', 'Indeks Kualitas Udara (Permen LHK 27/2021), dihitung hanya dari SO2 dan NO2.'],
+  ['ISPA', 'Infeksi saluran pernapasan akut. Dashboard memakai rawat inap ISPA balita (di bawah 5 tahun) dan lansia (di atas 60 tahun).'], ['PPOK', 'Penyakit paru obstruktif kronik.'],
+  ['Kasus berlebih', 'Selisih rawat inap prediksi model pada PM2.5 aktual dengan rawat inap bila PM2.5 dibatasi di nilai acuan.'], ['Porsi terkait PM2.5', 'Kasus berlebih dibagi seluruh rawat inap pada kelompok yang sama.'],
+  ['Hari valid', 'Hari dengan minimal 18 dari 24 jam data VALID (aturan 75% US EPA).'], ['Hari melebihi baku', 'Hari valid dengan rata-rata PM2.5 di atas 55 µg/m³.'], ['Musim asap', 'Agustus–Oktober, saat PM2.5 di wilayah gambut melonjak.'],
+  ['Tipe wilayah', 'Pengelompokan stasiun dengan k-means berdasarkan perilaku data: Kronis perkotaan, Gambut bereskalasi, Kalteng ekstrem, Latar bersih.'], ['Lonjakan musim asap', 'Rata-rata Agu–Okt dibagi rata-rata Jan–Jun.'], ['Eskalasi', 'Rata-rata Agu–Okt 2026 dibagi Agu–Okt 2024.'],
+  ['Tekanan RS', 'Admisi pernapasan per 100 tempat tidur per hari.'], ['Capture rate', 'Persentase jam data valid dari seluruh jam periode.'], ['Stasiun layak', 'Capture rate ≥ 85% dan tidak terdeteksi macet.'], ['Sensor macet', 'Nilai PM2.5 identik ≥ 6 jam berturut-turut walau berlabel VALID.']];
+const QA = [['1. Kondisi udara antar stasiun dan pulau, dibanding baku mutu, tren membaik atau memburuk', '01 Ringkasan (peta, KPI), 02 Waktu & Wilayah (kalender, musim asap per tahun)', '22 dari 26 stasiun di atas baku tahunan 15. Memburuk: PM2.5 nasional Jan–Okt naik 33% dari 2024 ke 2026, seluruhnya dari musim asap.'],
+  ['2. Waktu dan wilayah paling kritis: jam, hari kerja vs akhir pekan, musim, asap gambut', '02 Waktu & Wilayah', 'Agu–Okt di wilayah gambut, puncak jam 07–09, tidak ada efek akhir pekan. Kalteng Okt 2026 rata-rata 867 µg/m³.'],
+  ['3. Faktor yang memengaruhi: suhu, kelembapan, angin, lalu lintas, jarak jalan, tipe lokasi', '03 Pemicu Polusi', 'Musim × gambut menentukan lonjakan; lalu lintas dan jarak jalan menentukan level kota; cuaca lokal kecil pengaruhnya.'],
+  ['4. Dampak kesehatan, efek jeda, balita vs lansia', '04 Dampak Kesehatan', 'Efek mulai 25 µg/m³, respons di hari yang sama, balita dan lansia setara (+57% vs +55% per PM2.5 berlipat dua).'],
+  ['5. Kecukupan jaringan dan wilayah prioritas', '05 Jaringan Pemantau', '5 stasiun tidak layak, 1 pasang kembar, 13 provinsi tanpa stasiun.'], ['6. Dashboard interaktif dan komunikatif', 'Seluruh dashboard', 'Filter global, peta interaktif, slider skenario, tooltip, Tanya Data.']];
+const FILTERS = [['Tahun', 'Centang satu atau beberapa tahun', 'Membandingkan perbaikan atau pemburukan antar tahun (tujuan 1) dan menyusun laporan tahunan. KPI otomatis membandingkan tahun terakhir dengan tahun terawal pada bulan yang sama.'],
+  ['Bulan', 'Pilih bulan, atau pintasan Musim asap / Luar musim', 'Surveilans bekerja per periode siaga. Pintasan musim asap (Agu–Okt) langsung menampilkan beban saat karhutla.'],
+  ['Pulau', 'Centang pulau', 'Booklet meminta perbandingan antar pulau, dan koordinasi Dinkes berjalan per wilayah.'],
+  ['Tipe wilayah', 'Centang tipe hasil k-means', 'Kebijakan berbeda per akar masalah: lalu lintas untuk wilayah kronis, karhutla untuk wilayah gambut.'],
+  ['Kelompok rentan', 'Centang balita dan/atau lansia', 'Program berbeda per kelompok (posyandu vs layanan lansia); tujuan 4 meminta perbandingan keduanya.'],
+  ['Acuan PM2.5', 'Pilih 55, 25, atau 15', 'Simulasi kebijakan: berapa kasus yang hilang bila udara ditekan ke baku nasional, ambang data, atau pedoman WHO.']];
+function buildGuide() {
+  const sec = [['g-case', 'Latar belakang kasus'], ['g-why', 'Kenapa PM2.5'], ['g-q', 'Pertanyaan yang dijawab'], ['g-user', 'Pengguna & alur kerja'], ['g-filter', 'Filter & alasannya'], ...Object.keys(GUIDE).map((k, i) => ['g-' + k, `0${i + 1} ${PAGES[k][0]}`]), ['g-term', 'Istilah'], ['g-data', 'Data & metodologi']];
+  $('#guideNav').innerHTML = sec.map(([id, t]) => `<a href="#${id}">${t}</a>`).join('');
+  $('#guideBody').innerHTML = `
+  <h3 id="g-case">Latar belakang kasus</h3><p>Dataset kompetisi berisi pengukuran udara per jam dari <b>27 stasiun AQMS</b> di lima pulau besar (Jan 2024 – Okt 2026) dan rawat inap harian di <b>27 RS rujukan</b> yang berpasangan dengan tiap stasiun. Data memperlihatkan dua masalah sekaligus: kota besar seperti Jakarta yang kotor sepanjang tahun, dan wilayah gambut Sumatra–Kalimantan yang dilanda asap tiap Agustus–Oktober dengan intensitas yang naik setiap tahun.</p>
+  <p>Masalahnya bukan hanya udara kotor, tetapi <b>keputusan kesehatan yang belum terhubung dengan data udara</b>: baku mutu menilai hari aman atau tidak, sementara pasien sudah bertambah sebelum batas itu tercapai. JERNIH menyatukan keduanya: dari konsentrasi polutan, ke jumlah pasien, ke aksi.</p>
+  <h3 id="g-why">Kenapa PM2.5</h3><ul><li><b>Polutan penentu ISPU:</b> PM2.5 menjadi parameter kritis pada 99,7% hari valid dan 98,4% hari berkategori Tidak Sehat ke atas.</li><li><b>Paling terkait pasien:</b> rawat inap ISPA, asma, dan PPOK naik jelas mengikuti PM2.5 di seluruh RS.</li><li><b>Punya baku mutu harian dan tahunan</b> (PP 22/2021) serta pedoman WHO sebagai pembanding.</li><li>Polutan lain (SO2, NO2, CO, O3) tetap dipakai sebagai penanda sumber dan untuk menghitung IKU.</li></ul>
+  <h3 id="g-q">Pertanyaan yang dijawab</h3><table><tr><th>Tujuan booklet</th><th>Di mana</th><th>Jawaban singkat</th></tr>${QA.map(q => `<tr><td>${q[0]}</td><td>${q[1]}</td><td>${q[2]}</td></tr>`).join('')}</table>
+  <h3 id="g-user">Pengguna &amp; alur kerja</h3><p>Pengguna utama: <b>tim surveilans kesehatan lingkungan</b> (Kemenkes dan Dinkes provinsi) yang berkoordinasi dengan RS rujukan. Pengguna kedua: KLH/DLH untuk jaringan pemantau. Alur kerja: <b>laporan bulanan</b> sepanjang tahun, <b>pemantauan harian</b> saat musim kemarau (Juli–Oktober). Data diperbarui tiap bulan, sehingga waktu (tahun dan bulan) menjadi filter utama.</p>
+  <h3 id="g-filter">Filter &amp; alasannya</h3><table><tr><th>Filter</th><th>Cara pakai</th><th>Kebutuhan pengguna</th></tr>${FILTERS.map(f => `<tr><td><b>${f[0]}</b></td><td>${f[1]}</td><td>${f[2]}</td></tr>`).join('')}</table><p>Semua filter berlaku di seluruh halaman dan tersimpan saat pindah halaman. Tombol i di tiap grafik menjelaskan cara membacanya.</p>
+  ${Object.entries(GUIDE).map(([k, g], i) => `<h3 id="g-${k}">0${i + 1} ${PAGES[k][0]}</h3><h4>Inti halaman</h4><p>${g[0]}</p><h4>Cara membaca</h4><ol>${g[1].map(x => `<li>${x}</li>`).join('')}</ol>`).join('')}
+  <h3 id="g-term">Istilah</h3><table>${TERMS.map(t => `<tr><td style="width:150px"><b>${t[0]}</b></td><td>${t[1]}</td></tr>`).join('')}</table>
+  <h3 id="g-data">Data &amp; metodologi</h3><ul><li>Hanya dataset panitia. Batas provinsi pada peta memakai Peta Dasar BAKOSURTANAL sebagai latar, tidak dipakai dalam perhitungan.</li><li>Pembersihan: kode error dan nilai mustahil dibuang, jam alat disinkronkan, satuan ppm dikonversi, sensor macet ditandai, hanya data VALID yang dihitung.</li><li>Kasus berlebih: model Poisson dengan efek tetap RS, spline log PM2.5, hari, suhu, dan tahun.</li><li>Tipe wilayah: k-means pada level Jan–Jun, lonjakan musim asap, dan eskalasi 2024–2026.</li><li>Data sintetis: angka menggambarkan pola dalam dataset ini dan ditulis sebagai asosiasi, bukan sebab-akibat.</li></ul>`; }
+
+/* ---------- filters UI: dropdown multi-pilih (≥ 3 opsi), chip untuk 2 opsi ---------- */
+const OPTS = {years: YEARS.map(y => [y, y === '2026' ? '2026 (s.d. Okt)' : y]), months: MON.map((m, i) => [i + 1, m]), islands: ISLANDS.map(x => [x, x]),
+  archs: ARCHS.map(a => [a, ARCH[a]]), c0: [['55', '55 · baku mutu nasional'], ['25', '25 · ambang efek di data'], ['15', '15 · pedoman WHO']]};
+const NOUN = {years: 'tahun', months: 'bulan', islands: 'pulau', archs: 'tipe'};
+function ddLabel(k) { if (k === 'c0') return OPTS.c0.find(o => o[0] === S.c0)[1]; const sel = S[k].filter(v => OPTS[k].some(o => o[0] === v)), all = OPTS[k].length;
+  if (sel.length === all) return `Semua ${NOUN[k]}`; if (k === 'months') { const m = monthsLbl(); return m === 'musim asap' ? 'Musim asap (Agu–Okt)' : m === 'luar musim asap' ? 'Di luar musim asap' : sel.length <= 3 ? sel.map(v => MON[v - 1]).join(', ') : `${sel.length} dari 12 bulan`; }
+  return sel.length <= 2 ? sel.map(v => OPTS[k].find(o => o[0] === v)[1]).join(', ') : `${sel.length} dari ${all} ${NOUN[k]}`; }
+function setMulti(k, vals) { if (!vals.length) return false; S[k] = k === 'archs' ? [...vals, 'tanpa-data'] : vals; S.sel = null; save(); render(); return true; }
+function buildFilters() {
+  $$('.dd').forEach(dd => { const k = dd.dataset.k, menu = dd.querySelector('.menu'); dd.querySelector('summary span').textContent = ddLabel(k);
+    if (k === 'c0') { menu.innerHTML = OPTS.c0.map(([v, l]) => `<label><input type="radio" name="c0" value="${v}" ${S.c0 === v ? 'checked' : ''}>${l}</label>`).join('');
+      menu.querySelectorAll('input').forEach(i => i.onchange = () => { S.c0 = i.value; save(); render(); }); return; }
+    const cur = S[k], allOn = OPTS[k].every(o => cur.includes(o[0]));
+    menu.innerHTML = (k === 'months' ? '<div class="pre"><button type="button" data-p="asap">Musim asap</button><button type="button" data-p="luar">Luar musim</button></div>' : '') +
+      `<label class="all"><input type="checkbox" data-all ${allOn ? 'checked' : ''}>Pilih semua</label><div class="${k === 'months' ? 'grid3' : ''}">` +
+      OPTS[k].map(([v, l]) => `<label><input type="checkbox" value="${v}" ${cur.includes(v) ? 'checked' : ''}>${k === 'archs' ? `<i class="sw" style="background:${AC(v)}"></i>` : ''}${l}</label>`).join('') + '</div>';
+    menu.querySelector('[data-all]').onchange = e => { if (e.target.checked) setMulti(k, OPTS[k].map(o => o[0])); else { e.target.checked = true; } };
+    menu.querySelectorAll('input[value]').forEach(i => i.onchange = () => { const vals = [...menu.querySelectorAll('input[value]:checked')].map(x => k === 'months' ? +x.value : x.value); if (!setMulti(k, vals)) i.checked = true; });
+    menu.querySelectorAll('.pre button').forEach(b => b.onclick = () => setMulti('months', b.dataset.p === 'asap' ? [8, 9, 10] : [1, 2, 3, 4, 5, 6, 7, 11, 12])); });
+  $('#fGroup').innerHTML = [['u5', 'Balita'], ['o60', 'Lansia']].map(([v, l]) => `<label class="chk"><input type="checkbox" name="groups" value="${v}" ${S.groups.includes(v) ? 'checked' : ''}><span>${l}</span></label>`).join('');
+  $$('#fGroup input').forEach(i => i.onchange = () => { const vals = $$('#fGroup input:checked').map(x => x.value); if (!vals.length) { i.checked = true; return; } S.groups = vals; save(); render(); });
+}
+let openDD = null;
+document.addEventListener('toggle', e => { if (!e.target.classList || !e.target.classList.contains('dd')) return; if (e.target.open) { $$('.dd[open]').forEach(d => { if (d !== e.target) d.open = false; }); openDD = e.target.dataset.k; } else if (openDD === e.target.dataset.k) openDD = null; }, true);
+document.addEventListener('click', e => { if (!e.target.closest('.dd')) $$('.dd[open]').forEach(d => d.open = false); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { const d = $('.dd[open]'); if (d) { d.open = false; d.querySelector('summary').focus(); } } });
+function syncFilters() { if (openDD) { const d = $(`.dd[data-k="${openDD}"]`); if (d) d.open = true; }
+  const d = DEF(); const n = [S.years.length !== 3, S.months.length !== 12, S.islands.length !== 5, S.archs.length !== d.archs.length, S.groups.length !== 2, S.c0 !== '25'].filter(Boolean).length; $('#fcount').textContent = n ? `${n} aktif` : ''; }
+
+/* ---------- render ---------- */
+function moveInd() { const a = $(`#nav a[data-p="${S.page}"]`); if (a) $('#ind').style.transform = `translateY(${a.offsetTop}px)`; }
+function render() { const P = PAGES[S.page]; $('#title').innerHTML = `${P[0]} <span>: ${P[1]}</span>`; document.title = `JERNIH · ${P[0]}`; $('#banner').innerHTML = BANNER[S.page]();
+  $$('.page').forEach(p => p.classList.toggle('on', p.dataset.page === S.page)); $$('#nav a').forEach(a => a.dataset.p === S.page ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')); moveInd();
+  buildFilters(); syncFilters(); $('#rC0').value = Math.max(0, C0S.indexOf(S.c0)); $('#oC0').textContent = S.c0; kpis(); notes(); requestAnimationFrame(drawPage); }
+function go(p) { if (!PAGES[p]) p = 'ringkasan'; S.page = p; S.sel = null; render(); }
+addEventListener('hashchange', () => go(location.hash.slice(1)));
+$('#rC0').oninput = e => { S.c0 = C0S[+e.target.value]; save(); render(); };
+$('#btnReset').onclick = () => { Object.assign(S, DEF(), {sel: null}); save(); render(); };
+$$('#mapMetric button').forEach(b => b.onclick = () => { S.metric = b.dataset.v; save(); cMap(); });
+$$('#windSt button').forEach(b => b.onclick = () => { S.wind = b.dataset.v; save(); cWind(); });
+$$('.info').forEach(b => { const show = e => showTip(e, HOW[b.dataset.tip]); ['mouseenter', 'mousemove', 'focus', 'click'].forEach(ev => b.addEventListener(ev, show)); ['mouseleave', 'blur'].forEach(ev => b.addEventListener(ev, hideTip)); });
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { fit(); moveInd(); drawPage(); }, 120); });
+const themeBtn = $('#btnTheme'); const setThemeLbl = () => themeBtn.textContent = document.documentElement.dataset.theme === 'dark' ? 'Mode terang' : 'Mode gelap';
+themeBtn.onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = t; try { localStorage.setItem('jernih-theme', t); } catch (e) {} setThemeLbl(); render(); };
+try { const t = localStorage.getItem('jernih-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {} setThemeLbl();
+$('#kpClose').onclick = () => $('#kp').close(); $('#kp').addEventListener('click', e => { if (e.target.id === 'kp') $('#kp').close(); });
+const dlg = $('#guide'); buildGuide(); $('#btnGuide').onclick = () => { dlg.showModal(); const t = document.getElementById('g-' + S.page), body = $('#guideBody'); if (t) body.scrollTop = t.offsetTop - body.offsetTop - 6; };
+$('#guideNav').addEventListener('click', e => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); const t = document.getElementById(a.getAttribute('href').slice(1)), body = $('#guideBody'); body.scrollTo({top: t.offsetTop - body.offsetTop - 6, behavior: reduce ? 'auto' : 'smooth'}); }); $('#btnGuideClose').onclick = () => dlg.close(); dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+const dr = $('#drawer'); const openChat = o => { dr.classList.toggle('open', o); dr.setAttribute('aria-hidden', !o); $('#btnChat').setAttribute('aria-expanded', o); if (o) $('#q').focus(); else $('#btnChat').focus(); };
+$('#btnChat').onclick = () => openChat(!dr.classList.contains('open')); $('#btnChatClose').onclick = () => openChat(false); addEventListener('keydown', e => { if (e.key === 'Escape' && dr.classList.contains('open')) openChat(false); });
+const SUG = ['RS mana paling tertekan saat asap 2026?', 'Bandingkan Jakarta dan Palangka Raya', 'Berapa kasus balita bila PM2.5 ≤ 25?'];
+$('#sugs').innerHTML = SUG.map(s => `<button class="chip" type="button">${s}</button>`).join(''); $$('#sugs .chip').forEach(b => b.onclick = () => ask(b.textContent));
+function demo() { const r = [...D.stations].sort((a, b) => b.peak100 / b.off100 - a.peak100 / a.off100).slice(0, 5); const mx = r[0].peak100 / r[0].off100;
+  return `<div class="ans"><h3>Pangkalan Bun dan Sampit paling tertekan</h3><p>Saat puncak asap, admisi pernapasan PKN-01 naik ${fmt(mx, 1)}× dari normal. RS Tipe C Sampit (KTG-02, 150 TT) mencapai ${fmt(ST['KTG-02'].peak100)} admisi per 100 TT per hari.</p>${r.map(s => `<div style="display:grid;grid-template-columns:56px 1fr 38px;gap:6px;align-items:center;font-size:11px;margin:3px 0"><span>${s.code}</span><span style="height:11px;border-radius:3px;background:var(--bar);width:${s.peak100 / s.off100 / mx * 100}%"></span><b>${fmt(s.peak100 / s.off100, 1)}×</b></div>`).join('')}<p class="meta">Sumber: mart.hospital_pressure · 2/2 angka ditelusuri · grafik disimpan sebagai JSON di riwayat</p></div>`; }
+function ask(q) { if (!q.trim()) return; const log = $('#log'); log.insertAdjacentHTML('beforeend', `<div class="bub">${q.replace(/</g, '&lt;')}</div>`); log.insertAdjacentHTML('beforeend', q.startsWith('RS mana') ? demo() : '<div class="ans"><p>Contoh tampilan: di versi production pertanyaan ini dijawab dari semantic layer lengkap dengan grafik.</p></div>'); log.scrollTop = log.scrollHeight; $('#q').value = ''; }
+$('#chatForm').onsubmit = e => { e.preventDefault(); ask($('#q').value); }; $('#btnNewChat').onclick = () => { $('#log').innerHTML = '<div class="empty">Percakapan baru. Pilih saran di bawah atau ketik pertanyaan.</div>'; }; ask(SUG[0]);
+
+fit(); go(location.hash.slice(1) || 'ringkasan');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# --- Data pribadi & pendaftaran (KTM, bukti follow, twibbon): jangan pernah di-commit
+Pendaftaran/
+
+# --- Data mentah kompetisi: ikuti aturan panitia sebelum dipublikasikan
+Dataset DA Gelar Rasa 2026/
+Guidebook/
+
+# --- Referensi pihak lain / internal perusahaan
+Reference/
+
+# --- Rahasia
+.env
+.env.*
+!.env.example
+
+# --- Python
+analysis/.venv/
+analysis/out/
+__pycache__/
+*.pyc
+
+# --- Node / Next.js
+node_modules/
+web/.next/
+web/out/
+*.tsbuildinfo
+
+# --- Lain-lain
+.DS_Store
+.claude/
