@@ -13,16 +13,18 @@ import { KpiRow } from "./KpiRow";
 import { ProvinceDialog } from "./ProvinceDialog";
 import { Sidebar } from "./Sidebar";
 
-/** Kanvas desain 1440 px diskalakan ke layar; tinggi mengikuti rasio layar (min 790). Di bawah 900 px: tata letak ponsel. */
+/** Kanvas desain minimal 1440 × 790 diskalakan ke layar. Skala mengikuti sisi yang paling sempit, sisi lainnya
+    diisi dengan melebarkan/meninggikan kanvas (grid memakai fr), jadi tidak ada ruang kosong di kiri/kanan
+    pada layar laptop yang lebih lebar dari rasio desain. Di bawah 900 px: tata letak ponsel. */
 function useFitStage(ref: React.RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const fit = () => {
       const el = ref.current; if (!el) return;
       const vw = innerWidth, vh = innerHeight;
-      if (vw < 900) { document.body.classList.add("mobile"); el.style.transform = ""; el.style.height = ""; el.style.left = ""; return; }
+      if (vw < 900) { document.body.classList.add("mobile"); el.style.transform = ""; el.style.height = ""; el.style.width = ""; el.style.left = ""; return; }
       document.body.classList.remove("mobile");
-      let k = vw / 1440, H = vh / k; if (H < 790) { k = vh / 790; H = 790; }
-      el.style.height = H + "px"; el.style.transform = `scale(${k})`; el.style.left = Math.max(0, (vw - 1440 * k) / 2) + "px";
+      const k = Math.min(vw / 1440, vh / 790);
+      el.style.width = vw / k + "px"; el.style.height = vh / k + "px"; el.style.transform = `scale(${k})`; el.style.left = "0px";
     };
     fit(); addEventListener("resize", fit); return () => removeEventListener("resize", fit);
   }, [ref]);

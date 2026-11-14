@@ -51,28 +51,38 @@ function Annotated({ id, items, img, alt, below }: { id: string; items: Record<s
 function Overview({ go }: { go: (i: number) => void }) {
   return (
     <>
-      <p className="g-lead"><b>{BRAND.name}</b> ({BRAND.expansion}) menghubungkan kualitas udara dengan rawat inap di rumah sakit, supaya daerah bisa bersiaga sebelum pasien melonjak.</p>
+      <p className="g-lead">{BRAND.name} ({BRAND.expansion}) adalah dashboard surveilans untuk melihat berapa banyak rawat inap ISPA balita dan lansia yang berkaitan dengan PM2.5, di wilayah mana, pada bulan apa, dan apa yang perlu disiapkan lebih dulu.</p>
       <div className="g-two">
-        <section><h3>Latar belakang</h3>
-          <p>Data lomba berisi pengukuran udara per jam dari <b>27 stasiun AQMS</b> di lima pulau dan rawat inap harian di <b>27 RS rujukan</b> yang berpasangan dengan tiap stasiun (1 Jan 2024 – 14 Okt 2026). Ada dua masalah sekaligus: kota besar yang kotor sepanjang tahun, dan wilayah gambut yang dilanda asap tiap Agustus–Oktober dengan intensitas yang naik setiap tahun.</p>
-          <p>Baku mutu menilai sebuah hari aman atau tidak, padahal pasien sudah bertambah sebelum batas itu tercapai. Dashboard ini menerjemahkan konsentrasi polutan menjadi jumlah pasien, lalu menjadi aksi.</p></section>
+        <section><h3>Persoalan yang dijawab</h3>
+          <p>Sekitar sepertiga rawat inap ISPA balita (33%) dan lansia (31%) pada periode data berkaitan dengan PM2.5 di atas 25 µg/m³. Baku mutu nasional baru menandai hari bermasalah pada 55 µg/m³, sehingga 36% kasus berlebih justru terjadi pada hari yang menurut aturan masih dianggap aman.</p>
+          <p>Penyebabnya ada dua dan butuh respons berbeda: kota besar yang kotor sepanjang tahun karena lalu lintas, dan wilayah gambut yang tertutup asap tiap Agustus–Oktober dengan intensitas yang naik dari tahun ke tahun. Dashboard memisahkan keduanya supaya tindakan bisa tepat sasaran.</p></section>
         <section><h3>Kenapa PM2.5</h3><ul>
           <li>Polutan penentu ISPU pada 99,7% hari valid.</li>
           <li>Paling jelas terkait rawat inap ISPA, asma, dan PPOK.</li>
           <li>Punya baku mutu harian (55) dan tahunan (15) serta pedoman WHO.</li>
           <li>SO2, NO2, CO, O3 tetap dipakai sebagai penanda sumber dan untuk IKU.</li></ul></section>
       </div>
+      <h3>Data dan cara kerja</h3>
+      <p>Ada dua data dari panitia: pengukuran PM2.5 dan polutan lain per jam dari 27 stasiun AQMS di lima pulau, serta rawat inap harian di 27 rumah sakit rujukan, satu RS untuk tiap stasiun (1 Jan 2024 – 14 Okt 2026). Datanya sintetis, jadi hasilnya dibaca sebagai asosiasi, bukan sebab-akibat.</p>
+      <ol className="g-steps">
+        <li><b>Pembersihan.</b> Kode error dan nilai mustahil dibuang, sensor macet ditandai, dan hanya data berstatus VALID yang dihitung. Sebuah hari dianggap valid bila punya minimal 18 jam data.</li>
+        <li><b>Pemodelan.</b> Model Poisson menghitung berapa rawat inap yang melebihi perkiraan pada tiap level PM2.5, dengan memperhitungkan perbedaan antar RS, hari, suhu, dan tahun. Selisihnya disebut kasus berlebih.</li>
+        <li><b>Penyajian.</b> Hasilnya ditampilkan di lima halaman dengan filter yang sama, dari gambaran nasional sampai kelayakan tiap stasiun.</li>
+      </ol>
       <h3>Untuk siapa</h3>
-      <div className="g-users">
-        <div><b>Pengguna utama</b><p>Tim surveilans kesehatan lingkungan (Kemenkes, Dinkes provinsi) bersama RS rujukan.</p><small>Keputusan: kapan dan di mana siaga, RS mana disiapkan, ambang imbauan. Dipakai bulanan, harian saat Juli–Oktober.</small></div>
-        <div><b>Pengguna kedua</b><p>KLH/DLH pengelola jaringan pemantau.</p><small>Keputusan: stasiun mana diperbaiki, dipindah, atau ditambah; sumber mana dikendalikan.</small></div>
-      </div>
+      <table className="g-users">
+        <thead><tr><th>Pengguna</th><th>Keputusan yang dibantu</th><th>Pemakaian</th></tr></thead>
+        <tbody>
+          <tr><td><b>Tim surveilans kesehatan lingkungan</b> (Kemenkes, Dinkes provinsi) dan RS rujukan</td><td>Kapan dan di mana status siaga dimulai, RS mana yang disiapkan, dan ambang imbauan ke masyarakat.</td><td>Bulanan, harian pada Juli–Oktober.</td></tr>
+          <tr><td><b>KLH/DLH</b> pengelola jaringan pemantau</td><td>Stasiun mana yang diperbaiki, dipindah, atau ditambah, dan sumber emisi mana yang dikendalikan.</td><td>Tinjauan berkala.</td></tr>
+        </tbody>
+      </table>
       <h3>Isi dashboard</h3>
-      <div className="g-pages">
+      <ul className="g-pages">
         {PAGE_ORDER.map((p, i) => (
-          <button key={p} type="button" onClick={() => go(i + 1)}><span>{PAGES[p].n}</span><b>{PAGES[p].title}</b><small>{GUIDE_READ[p].inti}</small></button>
+          <li key={p}><button type="button" onClick={() => go(i + 1)}><span>{PAGES[p].n}</span><b>{PAGES[p].title}</b><small>{GUIDE_READ[p].inti}</small></button></li>
         ))}
-      </div>
+      </ul>
       <h3>Fitur</h3>
       <div className="g-feat">
         <div><b>Filter &amp; alasannya</b>
@@ -85,7 +95,6 @@ function Overview({ go }: { go: (i: number) => void }) {
           <b>Tanya Data AI</b><p>Tombol di kiri bawah untuk pertanyaan bebas.</p>
         </div>
       </div>
-      <p className="g-note">Sumber: hanya dataset panitia (data sintetis). Batas provinsi pada peta memakai Peta Dasar BAKOSURTANAL sebagai latar visual.</p>
     </>
   );
 }
