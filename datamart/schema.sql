@@ -1,4 +1,4 @@
--- JERNIH datamart (PostgreSQL 15+). Load with: analysis/.venv/bin/python datamart/load_postgres.py
+-- SIAGA NAPAS datamart (PostgreSQL 15+). Load with: python datamart/load_postgres.py
 -- Schema "mart" = read-only analytical tables; schema "app" = chatbot history (read/write).
 CREATE SCHEMA IF NOT EXISTS mart;
 CREATE SCHEMA IF NOT EXISTS app;

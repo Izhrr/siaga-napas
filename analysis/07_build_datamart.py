@@ -1,6 +1,6 @@
-"""Build the JERNIH datamart: tidy dimension, fact, and model tables (CSV + Parquet) in datamart/data/.
+"""Build the SIAGA NAPAS datamart: tidy dimension, fact, and model tables (CSV + Parquet) in datamart/data/.
 
-Run after 01-04 (clean, daily, health model, network/cluster). Re-run whenever raw data is refreshed.
+Run after 01-04 and 06 (clean, daily, health model, network/cluster, dashboard export). Re-run whenever raw data is refreshed.
 Grain summary
   fact_station_hour          station x hour (not exported to DB; stays in analysis/out)
   fact_station_day           station-hospital x local date      <- core grain
@@ -8,10 +8,12 @@ Grain summary
   fact_excess_station_month  station x month x outcome x threshold
   fact_excess_band_month     station x month x PM2.5 band (threshold 25, under-5 + over-60)
 """
+import os
+from pathlib import Path
 import json, math, os, warnings
 import numpy as np, pandas as pd
 warnings.filterwarnings("ignore")
-ROOT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026"
+ROOT = str(Path(__file__).resolve().parents[1])
 OUT = f"{ROOT}/analysis/out"; DM = f"{ROOT}/datamart/data"
 os.makedirs(DM, exist_ok=True)
 
@@ -27,7 +29,7 @@ dq = pd.read_csv(f"{OUT}/dq_log.csv")
 ARCH = {0: "gambut", 1: "bersih", 2: "ekstrem", 3: "kronis"}
 TZ = {"MRS-01": 1, "PLU-01": 1, "SM2-01": 1, "BJB-01": 1, "SRG-01": 2, "MER-01": 2}
 ISL = lambda p: "Jawa" if any(k in p for k in ["Jakarta", "Jawa", "Yogyakarta"]) else "Kalimantan" if "Kalimantan" in p else "Sulawesi" if "Sulawesi" in p else "Papua" if "Papua" in p else "Sumatra"
-geo_js = open(f"{ROOT}/mockup/data.js").read(); geo = json.loads(geo_js[geo_js.index("{"):geo_js.rindex("}") + 1])
+geo = json.load(open(f"{ROOT}/web/public/data/dashboard.json"))
 GEO = {s["code"]: s["geo"] for s in geo["stations"]}
 
 def save(df, name):
@@ -39,7 +41,7 @@ def save(df, name):
     print(f"{name:32s} {len(df):>7,d} rows")
 
 # ---------- dimensions ----------
-dim = dim.merge(pd.read_csv(f"{ROOT}/Dataset DA Gelar Rasa 2026/sensors.csv")[["sensor_id", "nama_sensor"]], on="sensor_id")
+dim = dim.merge(pd.read_csv(os.path.join(os.environ.get("DATA_DIR", f"{ROOT}/Dataset DA Gelar Rasa 2026"), "sensors.csv"))[["sensor_id", "nama_sensor"]], on="sensor_id")
 d = dim.rename(columns={"station_code": "aqms_code"}).rename(columns={"station": "station_code", "nama_sensor": "station_name", "kota_kabupaten": "kota_kabupaten", "nama_rumah_sakit": "hospital_name",
                         "kapasitas_tempat_tidur": "beds", "traffic_intensity_per_h": "traffic_per_h", "karakteristik_wilayah": "area_character"})
 d["island"] = d.provinsi.map(ISL); d["province_geo"] = d.station_code.map(GEO)

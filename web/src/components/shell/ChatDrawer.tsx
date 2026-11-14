@@ -105,7 +105,7 @@ export const ChatDrawer = forwardRef<ChatHandle, { page: string }>(function Chat
       if (!r.ok || "error" in j) throw new Error("error" in j ? j.error : `HTTP ${r.status}`);
       setConv(j.conversationId); setMsgs((m) => [...m, j.message]);
     } catch (e) {
-      setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", route: "error", content: `Tanya Data belum bisa menjawab: ${(e as Error).message}. Periksa koneksi database dan kunci API (lihat docs/SETUP.md).` }]);
+      setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", route: "error", content: `Tanya Data belum bisa menjawab: ${(e as Error).message}. Periksa koneksi database dan kunci API (lihat README).` }]);
     } finally { setBusy(false); }
   }
   return (

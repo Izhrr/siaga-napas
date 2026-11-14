@@ -1,8 +1,11 @@
 """Exposure-response (Poisson GLM, station FE + natural spline of log PM2.5) and attributable (excess) cases.
 Counterfactual: PM2.5 capped at C0 (25 = data-driven no-effect level / WHO IT-4; 55 = PP 22/2021 daily standard)."""
+import os
+from pathlib import Path
 import numpy as np, pandas as pd, statsmodels.api as sm, statsmodels.formula.api as smf, warnings
 warnings.filterwarnings("ignore")
-OUT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/analysis/out"
+OUT = str(Path(__file__).resolve().parents[1] / "analysis" / "out")
+os.makedirs(OUT, exist_ok=True)
 f = pd.read_parquet(f"{OUT}/fact_station_day.parquet")
 use = f[f.day_valid & ~f.station.isin(["JMB-02", "MER-01"])].copy()
 use["yr"] = use.date.dt.year.astype(str); use["lpm"] = np.log(use.pm25.clip(lower=1))

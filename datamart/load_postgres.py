@@ -1,7 +1,7 @@
 """Load datamart/data/*.csv into PostgreSQL (schema mart). Idempotent: truncates mart tables, keeps app.* (chat history).
 
 Usage:
-  DATABASE_URL=postgres://user@localhost:5432/jernih analysis/.venv/bin/python datamart/load_postgres.py
+  DATABASE_URL=postgres://user@localhost:5432/siaga python datamart/load_postgres.py
 The script reads DATABASE_URL from the environment only (never from a file).
 """
 import csv, io, os, sys

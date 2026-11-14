@@ -1,35 +1,31 @@
-# --- Data pribadi & pendaftaran (KTM, bukti follow, twibbon): jangan pernah di-commit
-Pendaftaran/
-
-# --- Data mentah kompetisi: ikuti aturan panitia sebelum dipublikasikan
+# Data mentah dan berkas lokal yang tidak ikut repo
 Dataset DA Gelar Rasa 2026/
+Pendaftaran/
 Guidebook/
-
-# --- Referensi pihak lain / internal perusahaan
 Reference/
 
-# --- Rahasia
+# Rahasia
 .env
 .env.*
 !.env.example
 
-# --- Python
+# Python
 analysis/.venv/
 analysis/out/
 __pycache__/
 *.pyc
 
-# --- Node / Next.js
+# Node / Next.js
 node_modules/
 web/.next/
 web/out/
 *.tsbuildinfo
+.next-check/
 
-# --- Lain-lain
+# Berkas perkakas lokal
 .DS_Store
-.claude/
 
-# --- File lepas di root: referensi/laporan pihak lain, gambar stok, screenshot debug
+# Berkas lepas di root
 /*.pdf
 /*.png
 /*.webp
@@ -37,6 +33,3 @@ web/out/
 /*.jpeg
 /*.docx
 /*.pptx
-
-# --- Output build verifikasi lokal
-.next-check/

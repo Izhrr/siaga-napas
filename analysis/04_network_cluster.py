@@ -1,10 +1,13 @@
 """Network adequacy (distance, redundancy) + unsupervised station archetypes (k-means on log monthly PM2.5 profile)."""
+import os
+from pathlib import Path
 import pandas as pd, numpy as np, warnings
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 warnings.filterwarnings("ignore")
 pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30); pd.set_option("display.max_rows", 80)
-OUT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/analysis/out"
+OUT = str(Path(__file__).resolve().parents[1] / "analysis" / "out")
+os.makedirs(OUT, exist_ok=True)
 dim = pd.read_csv(f"{OUT}/dim_station.csv").set_index("station")
 f = pd.read_parquet(f"{OUT}/fact_station_day.parquet")
 lat = np.radians(dim.latitude_dd); lon = np.radians(dim.longitude_dd); S = dim.index.tolist()

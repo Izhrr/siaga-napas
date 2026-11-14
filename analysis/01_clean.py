@@ -11,11 +11,14 @@ Rules (each one is logged to out/dq_log.csv):
   R6  Physical limits: negative or sentinel values -> NaN; PM2.5 > PM10*1.05 -> flagged.
   R7  Reindex to a full hourly grid so missing hours are explicit.
 """
+import os
+from pathlib import Path
 import glob, os, re
 import numpy as np, pandas as pd
 
-D = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/Dataset DA Gelar Rasa 2026"
-OUT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/analysis/out"
+D = os.environ.get("DATA_DIR", str(Path(__file__).resolve().parents[1] / "Dataset DA Gelar Rasa 2026"))
+OUT = str(Path(__file__).resolve().parents[1] / "analysis" / "out")
+os.makedirs(OUT, exist_ok=True)
 POLL = ["pm25", "pm10", "so2", "co", "o3", "no2"]
 MET = ["temperature_c", "humidity_pct", "wind_speed_ms", "wind_direction_deg"]
 MOLAR = {"so2": 64.066, "co": 28.010, "o3": 47.998, "no2": 46.006}

@@ -1,8 +1,11 @@
 """Profile raw AQMS files: schema, timestamp regularity, duplicates, qc flags, value ranges."""
+import os
+from pathlib import Path
 import glob, os, re
 import pandas as pd, numpy as np
-D = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/Dataset DA Gelar Rasa 2026"
-OUT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/analysis/out"
+D = os.environ.get("DATA_DIR", str(Path(__file__).resolve().parents[1] / "Dataset DA Gelar Rasa 2026"))
+OUT = str(Path(__file__).resolve().parents[1] / "analysis" / "out")
+os.makedirs(OUT, exist_ok=True)
 frames = []
 for f in sorted(glob.glob(f"{D}/*_AQMS.csv")):
     df = pd.read_csv(f, dtype=str)

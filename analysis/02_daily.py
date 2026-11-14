@@ -1,7 +1,10 @@
 """Station-day datamart (grain: station x local date) + join to hospital-day (1:1 via booklet mapping)."""
+import os
+from pathlib import Path
 import numpy as np, pandas as pd
-OUT = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/analysis/out"
-D = "/Users/izhar/Personal/Lomba/Gelar Rasa 2026/Dataset DA Gelar Rasa 2026"
+OUT = str(Path(__file__).resolve().parents[1] / "analysis" / "out")
+os.makedirs(OUT, exist_ok=True)
+D = os.environ.get("DATA_DIR", str(Path(__file__).resolve().parents[1] / "Dataset DA Gelar Rasa 2026"))
 h = pd.read_parquet(f"{OUT}/hourly_clean.parquet")
 POLL = ["pm25", "pm10", "so2", "co", "o3", "no2"]
 v = h.copy()
