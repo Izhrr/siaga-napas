@@ -43,7 +43,7 @@ export function CriticalBanner({ page, headline, points }: { page: PageKey; head
         <ol className="kp-list" ref={list}>
           {points.map((k, i) => (
             <li key={i} className={i === focus ? "on" : undefined}>
-              <div className="kp-head"><span className="kp-n">{String(i + 1).padStart(2, "0")}</span><div><div className="big">{k.fig}</div><p className="sub">{k.head}</p></div></div>
+              <div className="kp-head"><span className="kp-n">Insight {i + 1}</span><div className="big">{k.fig}</div><p className="sub">{k.head}</p></div>
               <div className="kp-row"><h3>Apa yang terjadi</h3><p>{k.what}</p></div>
               <div className="kp-row"><h3>Mengapa penting</h3><p>{k.why}</p></div>
               <div className="kp-act"><h3>Aksi</h3><p>{k.action}</p><small>Pelaksana: {k.who}</small></div>

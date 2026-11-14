@@ -73,11 +73,10 @@ export const GUIDE_READ: Record<PageKey, ReadGuide> = {
 
 /** Panduan Tanya Data: penanda pada screenshot panel chat. */
 export const TANYA_ITEMS: Record<string, [string, string]> = {
-  hist: ["Percakapan & riwayat", "Mulai percakapan baru atau buka percakapan lama. Riwayat tersimpan beserta grafiknya."],
+  hist: ["Percakapan & riwayat", "Mulai percakapan baru atau buka percakapan lama. Riwayat tersimpan beserta grafik dan waktunya."],
   q: ["Pertanyaan Anda", "Tulis dengan bahasa sehari-hari. Sebut wilayah, periode, atau kelompok bila perlu."],
   ans: ["Jawaban", "Kalimat pertama berisi jawaban, diikuti angka pendukung. Baris \"angka ditelusuri\" menunjukkan berapa angka yang cocok dengan hasil kueri."],
   chart: ["Grafik otomatis", "Dibuat dari hasil kueri ke datamart, bukan digambar oleh AI."],
-  meta: ["Jejak jawaban", "Model AI yang dipakai, jumlah kueri ke datamart, dan waktu jawab."],
   sug: ["Contoh pertanyaan", "Klik untuk langsung bertanya."],
   input: ["Kolom tanya", "Ketik pertanyaan lalu tekan Enter atau Kirim."],
 };

@@ -1,7 +1,7 @@
 "use client";
-import { CloseButton } from "../Icons";
+import { ChevronIcon, ClockIcon, CloseButton, PlusIcon } from "../Icons";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { fmt, nice } from "@/lib/format";
+import { MON, fmt, nice } from "@/lib/format";
 import type { Artifact, ChatMessage, ChatResponse, ConversationSummary } from "@/lib/chat-types";
 
 export interface ChatHandle { open: () => void }
@@ -56,17 +56,18 @@ function ArtifactView({ a }: { a: Artifact }) {
   );
 }
 
+/** Waktu riwayat ringkas: jam untuk hari ini, tanggal untuk hari lain. */
+function when(iso: string) {
+  const d = new Date(iso); if (isNaN(+d)) return "";
+  const today = new Date().toDateString() === d.toDateString();
+  return today ? `Hari ini ${String(d.getHours()).padStart(2, "0")}.${String(d.getMinutes()).padStart(2, "0")}` : `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function Answer({ m }: { m: ChatMessage }) {
   return (
     <div className="ans">
       <p className={m.route === "error" ? "err" : undefined}>{m.content}</p>
       {m.artifact && <ArtifactView a={m.artifact} />}
-      {m.route && m.route !== "error" && (
-        <p className="meta">
-          {m.route === "instant" ? "Jawaban langsung dari datamart" : m.route === "refused" ? "Di luar cakupan data" : `AI: ${m.provider} · ${m.model}`}
-          {m.toolCalls?.length ? ` · ${m.toolCalls.length} kueri ke datamart` : ""}{m.latencyMs ? ` · ${fmt(m.latencyMs / 1000, 1)} dtk` : ""}
-        </p>
-      )}
     </div>
   );
 }
@@ -110,17 +111,21 @@ export const ChatDrawer = forwardRef<ChatHandle, { page: string }>(function Chat
   return (
     <aside id="chat-drawer" className={`drawer${open ? " open" : ""}`} aria-label="Tanya Data" aria-hidden={!open} inert={!open}>
       <div className="dr-h">
-        <div><h2>Tanya Data, Asisten AI</h2><small>Jawaban dihitung dari datamart SIAGA NAPAS, lengkap dengan grafik</small></div>
+        <h2>Tanya Data, Asisten AI</h2>
         <CloseButton label="Tutup Tanya Data" onClick={close} />
       </div>
-      <div className="dr-tools">
-        <button className="chip" type="button" onClick={() => { setConv(undefined); setMsgs([]); }}>+ Percakapan baru</button>
-        <button className="chip" type="button" aria-pressed={showHist} onClick={loadHistory}>Riwayat</button>
+      <div className="dr-tools dr-act">
+        <button className="dr-btn" type="button" disabled={busy || (!conv && msgs.length === 0)} onClick={() => { setConv(undefined); setMsgs([]); setShowHist(false); input.current?.focus(); }}><PlusIcon />Percakapan baru</button>
+        <button className="dr-btn" type="button" aria-expanded={showHist} aria-controls="chat-hist" onClick={loadHistory}><ClockIcon />Riwayat<ChevronIcon size={9} dir={showHist ? "up" : "down"} /></button>
       </div>
       {showHist && (
-        <div className="hist">
-          {history == null ? <p className="meta">Memuat riwayat…</p> : history.length === 0 ? <p className="meta">Belum ada percakapan tersimpan.</p> :
-            history.map((h) => <button key={h.id} type="button" onClick={() => openConv(h.id)}>{h.title}</button>)}
+        <div className="hist" id="chat-hist">
+          {history == null ? <p className="hist-note">Memuat riwayat…</p> : history.length === 0 ? <p className="hist-note">Belum ada percakapan tersimpan.</p> :
+            history.map((h) => (
+              <button key={h.id} type="button" aria-current={h.id === conv || undefined} onClick={() => openConv(h.id)}>
+                <span>{h.title}</span><time dateTime={h.updatedAt}>{when(h.updatedAt)}</time>
+              </button>
+            ))}
         </div>
       )}
       <div className="log" ref={log} aria-live="polite">

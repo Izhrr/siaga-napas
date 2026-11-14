@@ -27,12 +27,12 @@ JS_PAGE = """() => {
   return out; }"""
 JS_CHAT = """() => {
   const d = document.querySelector('.drawer').getBoundingClientRect(), out = [];
-  // penanda di tepi kiri panel, sejajar tengah elemen (tidak menutupi teks); "meta" di tepi kanan agar tidak bertumpuk dengan grafik
-  const push = (key, el, side = 'l') => { if (!el) return; const b = el.getBoundingClientRect(); out.push({ key, x: side === 'l' ? 3 : d.width - 3, y: b.top - d.top + b.height / 2 }); };
+  // penanda di tepi kiri panel, sejajar tengah elemen (tidak menutupi teks)
+  const push = (key, el) => { if (!el) return; const b = el.getBoundingClientRect(); out.push({ key, x: 3, y: b.top - d.top + b.height / 2 }); };
   const tools = document.querySelectorAll('.drawer .dr-tools');
   push('hist', tools[0]); push('q', document.querySelector('.drawer .bub'));
   push('ans', document.querySelector('.drawer .ans p')); push('chart', document.querySelector('.drawer .ans figure'));
-  push('meta', document.querySelector('.drawer .ans .meta'), 'r'); push('sug', tools[tools.length - 1]); push('input', document.querySelector('.drawer .dr-f'));
+  push('sug', tools[tools.length - 1]); push('input', document.querySelector('.drawer .dr-f'));
   return { w: d.width, h: d.height, x: d.left, items: out }; }"""
 
 def save_jpg(png: bytes, path: Path, crop=None):
