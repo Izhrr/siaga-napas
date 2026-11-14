@@ -30,7 +30,7 @@ export function Sidebar({ page, onOpenChat }: { page: PageKey; onOpenChat: () =>
   return (
     <aside className="side" aria-label="Navigasi dan filter">
       <div className="side-bg" aria-hidden="true"><svg className="orn"><use href="#o-part" /></svg></div>
-      <div className="brand"><Logo /><div><b>{BRAND.name}</b><small>{BRAND.expansion}</small></div></div>
+      <div className="brand"><Logo /><div><b>{BRAND.name}</b><small>{BRAND.expansion}</small><small className="by">by {BRAND.team}</small></div></div>
       <nav aria-label="Halaman">
         <div className="nav" ref={nav}>
           <div className="ind" ref={ind} aria-hidden="true" />

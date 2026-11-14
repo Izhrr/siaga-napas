@@ -3,6 +3,7 @@
 export const BRAND = {
   name: "SIAGA NAPAS",
   expansion: "Sistem Intelijen Antisipasi Gangguan Napas",
+  team: "2 Epochs",
   tagline: "Data udara dan rumah sakit untuk bersiaga sebelum pasien melonjak",
   dataRange: "Data 1 Jan 2024 – 14 Okt 2026",
 };
