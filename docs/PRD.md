@@ -1,4 +1,4 @@
-# PRD · JERNIH
+# PRD · SIAGA NAPAS
 
 ## 1. Masalah
 Data udara dan data rumah sakit tidak pernah disatukan dalam satu alur keputusan. Baku mutu harian (55 µg/m³) menilai hari "aman", padahal di data ini rawat inap ISPA sudah naik sejak 25 µg/m³. Asap gambut makin parah tiap tahun, beban kronis kota tidak terlihat, dan sebagian stasiun pemantau tidak bisa dipercaya.

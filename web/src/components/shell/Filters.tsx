@@ -14,7 +14,7 @@ const OPTS: Record<MultiKey, [string | number, string][]> = {
   archs: ARCHS.map((a) => [a, ARCH_LABEL[a]]),
 };
 const NOUN: Record<MultiKey, string> = { years: "tahun", months: "bulan", islands: "pulau", archs: "tipe" };
-const C0: [Threshold, string][] = [["55", "55 · baku mutu nasional"], ["25", "25 · ambang efek di data"], ["15", "15 · pedoman WHO"]];
+const C0: [Threshold, string][] = [["55", "55 (baku mutu nasional)"], ["25", "25 (ambang efek di data)"], ["15", "15 (pedoman WHO)"]];
 
 function label(k: MultiKey, f: Filters): string {
   const sel = (f[k] as (string | number)[]).filter((v) => OPTS[k].some((o) => o[0] === v));

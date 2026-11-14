@@ -2,12 +2,15 @@
 import type { ReactNode } from "react";
 import { HOW } from "@/lib/content";
 import { hideTip, showTip } from "@/lib/charts/core";
+import { InfoIcon } from "./Icons";
 
 export function InfoButton({ k }: { k: string }) {
-  const show = (e: React.MouseEvent | React.FocusEvent) => showTip({ clientX: (e as React.MouseEvent).clientX, clientY: (e as React.MouseEvent).clientY, target: e.currentTarget }, HOW[k]);
+  // Teks dipecah per kalimat jadi daftar pendek agar mudah dipindai
+  const html = `<div class="how"><b>Cara membaca</b><ul>${HOW[k].split(/(?<=\.)\s+/).map((s) => `<li>${s}</li>`).join("")}</ul></div>`;
+  const show = (e: React.MouseEvent | React.FocusEvent) => showTip({ clientX: (e as React.MouseEvent).clientX, clientY: (e as React.MouseEvent).clientY, target: e.currentTarget }, html);
   return (
     <button className="info" type="button" aria-label="Cara membaca grafik" onMouseEnter={show} onMouseMove={show} onFocus={show} onClick={show} onMouseLeave={hideTip} onBlur={hideTip}>
-      i
+      <InfoIcon />
     </button>
   );
 }

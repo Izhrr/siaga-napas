@@ -1,7 +1,7 @@
-# FRONTEND · JERNIH (web/)
+# FRONTEND · SIAGA NAPAS (web/)
 
 ## Stack
-Next.js 16 (App Router, Turbopack, `cacheComponents`), React 19, TypeScript, Zustand (state filter), Tailwind v4 (preflight saja; gaya utama di `globals.css` berbasis token CSS), SVG buatan sendiri untuk grafik (tanpa library chart: kontrol penuh atas label, batas, dan animasi).
+Next.js 16 (App Router, Turbopack, `cacheComponents`), React 19, TypeScript, Zustand (state filter), CSS murni berbasis token di `globals.css` (tanpa Tailwind, agar HMR CSS andal), SVG buatan sendiri untuk grafik (tanpa library chart: kontrol penuh atas label, batas, dan animasi).
 
 ## Struktur
 ```

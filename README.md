@@ -1,6 +1,6 @@
-# JERNIH · Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi
+# SIAGA NAPAS · Sistem Intelijen Antisipasi Gangguan Napas
 
-Dashboard web untuk lomba Dashboard Analysis Gelar Rasa 2026. JERNIH menghubungkan PM2.5 dari 27 stasiun AQMS dengan rawat inap di 27 RS rujukan, lalu menerjemahkannya menjadi aksi untuk tim surveilans kesehatan lingkungan.
+Dashboard web untuk lomba Dashboard Analysis Gelar Rasa 2026. SIAGA NAPAS menghubungkan PM2.5 dari 27 stasiun AQMS dengan rawat inap di 27 RS rujukan, lalu menerjemahkannya menjadi aksi untuk tim surveilans kesehatan lingkungan.
 
 > Pesan inti: sepertiga rawat inap ISPA balita dan lansia berasosiasi dengan PM2.5 di atas 25 µg/m³, dan lebih dari sepertiganya terjadi di hari yang lolos baku mutu harian 55.
 
@@ -29,7 +29,7 @@ cd web && npm install && npm run dev        # http://localhost:3000
 
 ## Dokumen
 
-- [`docs/SETUP.md`](docs/SETUP.md): langkah setup lokal dan deploy
+- [`docs/SETUP.md`](docs/SETUP.md): setup lokal · [`docs/DEPLOY.md`](docs/DEPLOY.md): database online (Supabase) & deploy (Vercel)
 - [`docs/PRD.md`](docs/PRD.md): tujuan, pengguna, ruang lingkup, kriteria sukses
 - [`docs/FRONTEND.md`](docs/FRONTEND.md) · [`docs/BACKEND.md`](docs/BACKEND.md) · [`docs/CHATBOT.md`](docs/CHATBOT.md) · [`docs/DATAMART.md`](docs/DATAMART.md)
 - [`docs/EDA.md`](docs/EDA.md): temuan, keputusan preprocessing, grain data

@@ -33,7 +33,7 @@ export const TOOL_DEFS = [
   { name: "exposure_response", description: "Kurva risiko rawat inap terhadap PM2.5 dari model Poisson (rasio terhadap hari dengan PM2.5 15).", parameters: { type: "object", required: ["outcome"], properties: { outcome: { type: "string", enum: ["resp_u5", "resp_o60", "asthma", "copd", "resp", "cvd", "death"] } } } },
   { name: "station_profile", description: "Profil satu stasiun: lokasi, tipe wilayah, RS, kualitas data, level dan lonjakan PM2.5.", parameters: { type: "object", required: ["station"], properties: { station: { type: "string", enum: STATIONS } } } },
   { name: "data_quality", description: "Kualitas data stasiun: % jam valid, masalah, stasiun layak atau tidak.", parameters: { type: "object", properties: { only_problematic: { type: "boolean" } } } },
-  { name: "cannot_answer", description: "Gunakan bila pertanyaan di luar cakupan data JERNIH (mis. data lain, prediksi masa depan, opini politik). Jangan menjawab dengan metrik lain yang mirip.", parameters: { type: "object", required: ["reason"], properties: { reason: { type: "string" }, try_instead: { type: "array", items: { type: "string" } } } } },
+  { name: "cannot_answer", description: "Gunakan bila pertanyaan di luar cakupan data SIAGA NAPAS (mis. data lain, prediksi masa depan, opini politik). Jangan menjawab dengan metrik lain yang mirip.", parameters: { type: "object", required: ["reason"], properties: { reason: { type: "string" }, try_instead: { type: "array", items: { type: "string" } } } } },
 ] as const;
 
 export interface ToolResult { rows: Record<string, unknown>[]; artifact?: Artifact | null; refusal?: { reason: string; try_instead?: string[] } }
@@ -92,7 +92,8 @@ export async function runTool(name: string, args: Record<string, unknown>): Prom
         ? await s`select ${xcol} as x, station_code as series, ${metricExpr(m, f)} as value from mart.v_station_month v where ${where(f)} group by 1, 2 order by 1`
         : await s`select ${xcol} as x, 'Nasional' as series, ${metricExpr(m, f)} as value from mart.v_station_month v where ${where(f)} group by 1 order by 1`;
       const xs = [...new Set(rows.map((r) => String(r.x)))], names = [...new Set(rows.map((r) => String(r.series)))];
-      const series = names.map((nm) => ({ name: nm, values: xs.map((x) => num(rows.find((r) => String(r.x) === x && String(r.series) === nm)?.value)) }));
+      const city = Object.fromEntries((await s`select station_code, kota_kabupaten from mart.dim_station`).map((r) => [r.station_code, String(r.kota_kabupaten).replace(/^(Kota Administrasi|Kabupaten|Kota) /, "")]));
+      const series = names.map((nm) => ({ name: city[nm] ? `${city[nm]} (${nm})` : nm, values: xs.map((x) => num(rows.find((r) => String(r.x) === x && String(r.series) === nm)?.value)) }));
       return { rows: rows.map((r) => ({ x: r.x, series: r.series, value: num(r.value) })), artifact: { kind: "lines", title: `${METRIC_LABEL[m][0]} per ${grain === "year" ? "tahun" : "bulan"}`, unit: METRIC_LABEL[m][1], x: xs, series } };
     }
     case "hospital_pressure": {
@@ -101,7 +102,7 @@ export async function runTool(name: string, args: Record<string, unknown>): Prom
         round((resp_per100bed_peak7 / nullif(resp_per100bed_normal, 0))::numeric, 1) as multiplier
         from mart.v_station_profile where (${st.length === 0} or station_code = any(${st})) order by peak desc nulls last limit ${n}`;
       const out = rows.map((r) => ({ station: r.station_code, kota: r.kota_kabupaten, kelas: r.kelas_faskes, beds: r.beds, normal: num(r.normal), peak: num(r.peak), multiplier: num(r.multiplier) }));
-      return { rows: out, artifact: { kind: "bars", title: "Puncak admisi pernapasan per 100 tempat tidur per hari", unit: "", bars: out.map((r) => ({ label: `${r.station} ${String(r.kelas).replace("Tipe ", "")}`, value: r.peak ?? 0 })) } };
+      return { rows: out, artifact: { kind: "bars", title: "Puncak admisi pernapasan per 100 tempat tidur per hari", unit: "", bars: out.map((r) => ({ label: `${r.station} (${r.kelas})`, value: r.peak ?? 0 })) } };
     }
     case "exposure_response": {
       const rows = await s`select pm25, rr_vs_15 from mart.model_exposure_response where outcome = ${String(args.outcome)} and pm25 = any(${[15, 25, 37.5, 55, 75, 100, 150, 250]}) order by pm25`;

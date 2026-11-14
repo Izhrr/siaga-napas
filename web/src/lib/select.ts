@@ -59,7 +59,7 @@ export function monthsLabel(months: number[]): string {
 export function periodLabel(f: Filters): string {
   const y = [...f.years].sort();
   const ml = monthsLabel(f.months);
-  return (y.length === 3 ? "2024–2026" : y.join(", ")) + (ml ? " · " + ml : "");
+  return (y.length === 3 ? "2024–2026" : y.join(", ")) + (ml ? ", " + ml : "");
 }
 
 /** Tahun terakhir terpilih vs tahun terawal (atau tahun sebelumnya), pada bulan yang sama dan ≤ Oktober agar sebanding. */

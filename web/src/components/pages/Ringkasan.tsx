@@ -2,8 +2,8 @@
 import { Card, Pills } from "../Card";
 import { Chart } from "../Chart";
 import { useCtx } from "../DataProvider";
-import { cssVar, el, hover, row, seqColor, text } from "@/lib/charts/core";
-import { combo, hbars, mapBase } from "@/lib/charts/kit";
+import { cssVar, el, hover, row, seqColor } from "@/lib/charts/core";
+import { combo, hbars, mapBase, mapLabels } from "@/lib/charts/kit";
 import { fmt, kfmt, MON } from "@/lib/format";
 import { aggCtx, groupLabel, periodLabel, shortProv, thresholdLabel, type Ctx } from "@/lib/select";
 import { useUI } from "@/lib/store";
@@ -55,9 +55,9 @@ export function Ringkasan() {
 
   return (
     <>
-      <Card area="1 / 1 / 2 / 11" title="Persebaran Beban ISPA per Provinsi" how="map" sub={`${M.name} · ${periodLabel(c.f)}`}
+      <Card area="1 / 1 / 2 / 11" title="Persebaran Beban ISPA per Provinsi" how="map" sub={`${M.name}, ${periodLabel(c.f)}`}
         tools={<Pills label="Metrik peta" value={metric} onChange={setMetric} options={[["af", "% ISPA terkait"], ["pm", "PM2.5"], ["exc", "Hari > 55"]]} />}
-        legend={M.lbl.map((l, i) => `<span><i class="sw" style="background:var(--s${i + 1})"></i>${l}</span>`).join("") + `<span>${HATCH_SW}Tanpa stasiun</span>`}
+        legend={M.lbl.map((l, i) => `<span><i class="sw" style="background:var(--s${i + 1})"></i>${l}</span>`).join("") + `<span>${HATCH_SW}Tanpa stasiun</span><span><i class="sw dot" style="background:var(--ink)"></i>Stasiun pemantau</span>` + (c.codes.length < c.d.stations.length ? '<span><i class="sw dot" style="background:var(--bar-gray)"></i>Stasiun di luar filter</span>' : "") + '<span><i class="sw" style="background:transparent;outline:2px solid var(--ink);outline-offset:-2px"></i>Provinsi dipilih</span>'}
         insight={ranked[0] ? `${shortProv(pname(ranked[0][0]))} tertinggi (${M.f(ranked[0][1].v!)}). Provinsi bergaris tidak punya stasiun, bebannya tidak terlihat.` : "tidak ada provinsi pada filter ini."}>
         <Chart deps={[c, metric, sel]} draw={(box) => {
           const { svg, hatch } = mapBase(box, "Peta beban ISPA per provinsi", "map");
@@ -73,7 +73,7 @@ export function Ringkasan() {
           }
           const on = new Set(c.codes);
           c.d.stations.forEach((s) => el("circle", { cx: s.x, cy: s.y, r: 4, fill: on.has(s.code) ? cssVar("--ink") : cssVar("--bar-gray"), stroke: cssVar("--card"), "stroke-width": 1.5, "pointer-events": "none" }, svg));
-          ranked.forEach(([id, v]) => { const st = c.d.stations.find((s) => s.geo === id)!; const right = st.x > 820; text(svg, st.x + (right ? -9 : 9), st.y - 9, `${shortProv(pname(id))} ${M.f(v.v!)}`, "lab-b halo", right ? "end" : "start", { style: "font-size:21px" }); });
+          mapLabels(svg, ranked.map(([id, v]) => { const st = c.d.stations.find((s) => s.geo === id)!; return { x: st.x, y: st.y, text: `${shortProv(pname(id))} ${M.f(v.v!)}` }; }));
         }} />
       </Card>
 

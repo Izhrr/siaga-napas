@@ -2,12 +2,84 @@
    per-page how-to-read, glossary, data & method. */
 import type { PageKey } from "./types";
 
-export const GUIDE_PAGES: Record<PageKey, [string, string[]]> = {
-  ringkasan: ["Seberapa besar beban kesehatan akibat udara kotor, di mana, dan apa yang harus dilakukan.", ["Baca Temuan Kritis di bawah judul.", "Mulai dari kolom Poin Kunci & Aksi di kanan; klik poin untuk detail.", "KPI: jumlah kasus berlebih, porsi pasien, dan yang tercegah bila patuh baku 55.", "Peta: ganti metrik di header peta, klik provinsi untuk profil.", "Tren: merah tua = musim asap."]],
-  waktu: ["Kapan dan di mana pencemaran paling kritis.", ["Kalender: cari blok gelap Agu–Okt yang berulang.", "Pola musiman: garis 2026 di atas batang = tahun ini lebih buruk.", "Musim asap per tahun: batang naik = eskalasi.", "Pola jam: kapan imbauan paling efektif."]],
-  pemicu: ["Faktor yang menentukan level dan lonjakan PM2.5.", ["Peta tipe wilayah: kanan = kronis, atas = musiman.", "Lalu lintas: titik naik ke kanan = makin padat makin kotor.", "Faktor: musim dan lokasi jauh di atas cuaca lokal.", "Arah angin: pilih stasiun di header kartu."]],
-  dampak: ["Berapa pasien bertambah, siapa paling rentan, dan kapan mereka datang.", ["Kurva: geser slider skenario batas.", "Kapan pasien datang: lonjakan di H0.", "Kerentanan: balita dan lansia setara.", "Tekanan RS: RS kecil di wilayah gambut paling tertekan."]],
-  jaringan: ["Data mana yang bisa dipercaya, dan stasiun mana diperbaiki, dipindah, atau ditambah.", ["Peta cakupan: bergaris = tanpa stasiun.", "Kelayakan: merah = di bawah 85% atau macet.", "IKU: indeks resmi tidak membaca PM2.5.", "Rencana aksi: urutan prioritas."]],
+/** Panduan baca per halaman (gaya dokumentasi Paragon): inti halaman, penjelasan tiap penanda bernomor
+    pada screenshot (kunci = "filter" | "crit" | "kpi" | "ai" | judul kartu), dan contoh membaca dengan filter bawaan. */
+export interface ReadGuide { inti: string; items: Record<string, [string, string]>; contoh: string[] }
+const COMMON: Record<string, [string, string]> = {
+  filter: ["Atur Filter", "Berlaku di semua halaman: tahun, bulan, pulau, tipe wilayah, acuan PM2.5, kelompok rentan."],
+  crit: ["Temuan Kritis & Poin Kunci", "Kalimat inti halaman. Empat angka di bawahnya bisa diklik untuk melihat apa yang terjadi, mengapa penting, dan aksinya."],
+  kpi: ["Angka utama", "Lima angka sesuai filter. Baris kecil di bawah angka menunjukkan perubahan dibanding tahun sebelumnya pada bulan yang sama."],
+  ai: ["Tanya Data AI", "Asisten AI untuk pertanyaan yang tidak tersedia di grafik."],
+};
+export const GUIDE_READ: Record<PageKey, ReadGuide> = {
+  ringkasan: {
+    inti: "Seberapa besar beban rawat inap akibat udara kotor, di provinsi mana paling berat, dan berapa yang bisa dicegah.",
+    items: { ...COMMON,
+      "Persebaran Beban ISPA per Provinsi": ["Peta beban", "Makin gelap makin berat. Ganti metrik di header peta. Provinsi bergaris tidak punya stasiun. Klik provinsi untuk profil stasiunnya."],
+      "Tren Bulanan Kasus Berlebih": ["Tren bulanan", "Batang merah tua = Agustus–Oktober. Garis hitam = rata-rata 3 bulan untuk melihat arah."],
+      "Kasus Berlebih per Level PM2.5": ["Level PM2.5", "Kasus berlebih menurut PM2.5 harian. Batang merah = hari yang lolos baku mutu (25–55 µg/m³)."],
+      "Peringkat Provinsi": ["Peringkat", "Provinsi dengan kasus berlebih terbanyak. Merah = balita, abu = lansia."] },
+    contoh: [
+      "Dengan filter bawaan, peta paling gelap di DKI Jakarta (43%). Artinya hampir separuh rawat inap ISPA balita dan lansia di sana berasosiasi dengan PM2.5 di atas 25 µg/m³.",
+      "Ganti Bulan ke Musim asap: Kalimantan Tengah naik ke 71%. Beban Jakarta merata sepanjang tahun, beban Kalimantan menumpuk di Agustus–Oktober.",
+      "Ganti Acuan PM2.5 ke 55: kasus berlebih turun dari ±121 ribu menjadi ±35 ribu. Selisihnya adalah beban yang tidak tertangkap baku mutu nasional."] },
+  waktu: {
+    inti: "Kapan dan di mana udara paling kritis: bulan, tahun, dan jam.",
+    items: { ...COMMON,
+      "Kalender PM2.5 per Wilayah": ["Kalender", "Baris = stasiun, kolom = bulan. Makin gelap makin kotor. Kotak kecil di kiri = tipe wilayah. Sel bergaris = data tidak valid."],
+      "Pola Musiman": ["Pola musiman", "Batang = rata-rata tiap bulan 2024–2025, garis = 2026. Garis di atas batang berarti 2026 lebih buruk."],
+      "Musim Asap per Tahun": ["Musim asap", "Tiga batang per wilayah (2024, 2025, 2026) untuk Agustus–Oktober. Batang yang naik berarti asap makin pekat."],
+      "Pola Jam Harian": ["Pola jam", "1,0× = rata-rata harian. Pita merah muda = pukul 07–09 waktu setempat."] },
+    contoh: [
+      "Di kalender, blok gelap muncul tiap Agustus–Oktober pada baris KTG, PKN, dan PLB, dan tahun 2026 paling gelap.",
+      "Di Pola Musiman, garis 2026 melonjak jauh di atas batang mulai Agustus: Oktober 2026 lebih dari dua kali rata-rata Oktober dua tahun sebelumnya.",
+      "Puncak harian pukul 07–09: imbauan paling efektif dikirim sebelum jam berangkat sekolah dan kerja."] },
+  pemicu: {
+    inti: "Faktor yang menentukan level dan lonjakan PM2.5: lalu lintas kota dan musim di lahan gambut.",
+    items: { ...COMMON,
+      "Peta Tipe Wilayah": ["Tipe wilayah", "Sumbu x = PM2.5 di luar musim asap, sumbu y = lonjakan saat musim asap. Kanan = kotor sepanjang tahun, atas = melonjak saat asap. Warna = tipe hasil k-means."],
+      "Lalu Lintas vs PM2.5": ["Lalu lintas", "Tiap titik satu stasiun; garis putus-putus = tren. Makin ke kanan makin padat kendaraan."],
+      "Level per Tipe Wilayah": ["Level per tipe", "Abu = Januari–Juni, berwarna = Agustus–Oktober. Selisih tinggi batang = besar lonjakan."],
+      "Faktor Paling Berpengaruh": ["Faktor", "Kontribusi tiap faktor dalam model gradient boosting yang memprediksi PM2.5 harian."],
+      "Arah Angin": ["Arah angin", "PM2.5 rata-rata menurut arah datang angin. Pilih stasiun di header kartu."] },
+    contoh: [
+      "KTG-01 di kiri atas: bersih di luar musim, tetapi melonjak 7,3× saat asap.",
+      "JKT-02 di kanan bawah: kotor sepanjang tahun tanpa lonjakan musim. Sumbernya lalu lintas dan industri, bukan asap.",
+      "Musim 0,78 vs cuaca lokal ≤ 0,08: siaga cukup mengikuti kalender musim, tidak perlu menunggu prakiraan cuaca."] },
+  dampak: {
+    inti: "Berapa pasien bertambah, siapa paling rentan, kapan mereka datang, dan RS mana yang paling tertekan.",
+    items: { ...COMMON,
+      "Kurva Risiko Rawat Inap": ["Kurva risiko", "Risiko rawat inap dibanding hari dengan PM2.5 15 µg/m³. Pita merah muda = hari lolos baku. Geser Skenario batas untuk menghitung ulang kasus berlebih."],
+      "Kapan Pasien Datang": ["Waktu kedatangan", "Admisi sebelum dan sesudah lonjakan PM2.5 (H0). Di atas 1× berarti lebih tinggi dari minggu sebelumnya."],
+      "Kerentanan per Penyakit": ["Kerentanan", "Kenaikan kasus bila PM2.5 naik dua kali lipat, per penyakit."],
+      "Tekanan Rumah Sakit": ["Tekanan RS", "Titik abu = normal, titik merah = puncak 7 hari. Makin panjang garis, makin besar lonjakan."],
+      "Kasus Berlebih per Tahun": ["Per tahun", "Kasus berlebih Januari–Oktober tiap tahun agar sebanding. Angka merah = perubahan dari tahun sebelumnya."] },
+    contoh: [
+      "Pada PM2.5 55 µg/m³ risiko rawat inap ISPA balita sudah sekitar 2× hari bersih; pada 150 sekitar 4×.",
+      "Garis balita langsung naik di H0, jadi RS harus siap sebelum asap datang, bukan setelah sensor naik.",
+      "KTG-02 (RS Tipe C, 150 tempat tidur) mencapai 115 admisi pernapasan per 100 tempat tidur per hari saat puncak asap."] },
+  jaringan: {
+    inti: "Stasiun mana yang datanya bisa dipercaya, dan mana yang perlu diperbaiki, dipindah, atau ditambah.",
+    items: { ...COMMON,
+      "Cakupan Stasiun per Provinsi": ["Cakupan", "Warna = status stasiun di provinsi. Bergaris = tanpa stasiun. Titik hitam = stasiun layak, titik merah = tidak layak."],
+      'IKU "Baik", PM2.5 Buruk': ["IKU vs PM2.5", "Stasiun yang IKU-nya tergolong baik (≥ 75) padahal PM2.5 sering di atas 55."],
+      "Rencana Aksi Jaringan": ["Rencana aksi", "Urutan aksi: perbaiki data, relokasi, lalu tambah stasiun."],
+      "Kelayakan Data per Stasiun": ["Kelayakan data", "% jam valid, 10 stasiun terendah. Garis kuning = batas layak 85%."] },
+    contoh: [
+      "JMB-02 Muaro Jambi hanya 0,5% data valid, padahal baseline wilayahnya tertinggi (68,9 µg/m³).",
+      "KTG-02 punya IKU 75 (baik) padahal 96 hari di atas baku 55 pada 2025, karena IKU hanya membaca SO2 dan NO2.",
+      "13 provinsi bergaris di peta tidak punya stasiun sama sekali: bebannya tidak terlihat dalam perencanaan."] },
+};
+
+/** Panduan Tanya Data: penanda pada screenshot panel chat. */
+export const TANYA_ITEMS: Record<string, [string, string]> = {
+  hist: ["Percakapan & riwayat", "Mulai percakapan baru atau buka percakapan lama. Riwayat tersimpan beserta grafiknya."],
+  q: ["Pertanyaan Anda", "Tulis dengan bahasa sehari-hari. Sebut wilayah, periode, atau kelompok bila perlu."],
+  ans: ["Jawaban", "Kalimat pertama berisi jawaban, diikuti angka pendukung. Baris \"angka ditelusuri\" menunjukkan berapa angka yang cocok dengan hasil kueri."],
+  chart: ["Grafik otomatis", "Dibuat dari hasil kueri ke datamart, bukan digambar oleh AI."],
+  meta: ["Jejak jawaban", "Model AI yang dipakai, jumlah kueri ke datamart, dan waktu jawab."],
+  sug: ["Contoh pertanyaan", "Klik untuk langsung bertanya."],
+  input: ["Kolom tanya", "Ketik pertanyaan lalu tekan Enter atau Kirim."],
 };
 
 export const TERMS: [string, string][] = [
@@ -33,7 +105,7 @@ export const TERMS: [string, string][] = [
   ["Capture rate", "Persentase jam data valid dari seluruh jam periode."],
   ["Stasiun layak", "Capture rate ≥ 85% dan tidak terdeteksi macet."],
   ["Sensor macet", "Nilai PM2.5 identik ≥ 6 jam berturut-turut walau berlabel VALID."],
-  ["Tanya Data", "Asisten AI yang menjawab pertanyaan dari datamart JERNIH, lengkap dengan grafik. Setiap angka ditelusuri ke tabel sumber."],
+  ["Tanya Data", "Asisten AI yang menjawab pertanyaan dari datamart SIAGA NAPAS, lengkap dengan grafik. Setiap angka ditelusuri ke tabel sumber."],
 ];
 
 export const QA: [string, string, string][] = [

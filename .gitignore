@@ -28,3 +28,15 @@ web/out/
 # --- Lain-lain
 .DS_Store
 .claude/
+
+# --- File lepas di root: referensi/laporan pihak lain, gambar stok, screenshot debug
+/*.pdf
+/*.png
+/*.webp
+/*.jpg
+/*.jpeg
+/*.docx
+/*.pptx
+
+# --- Output build verifikasi lokal
+.next-check/

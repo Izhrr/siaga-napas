@@ -1,4 +1,4 @@
-# Setup JERNIH
+# Setup SIAGA NAPAS
 
 Tiga lapis: **pipeline data** (Python) → **datamart** (PostgreSQL) → **web** (Next.js, dashboard + API chatbot).
 Dashboard bisa jalan tanpa database; chatbot Tanya Data butuh database dan kunci API.
@@ -39,7 +39,7 @@ analysis/.venv/bin/python datamart/load_postgres.py   # buat schema mart & app, 
 psql jernih -c "select count(*) from mart.v_station_month;"   # 918
 ```
 
-**Production (gratis):** buat database di [Neon](https://neon.tech) atau Supabase, salin connection string (pakai `sslmode=require`), lalu jalankan `load_postgres.py` dengan `DATABASE_URL` tersebut dari laptop.
+**Production (gratis):** Supabase, ikuti `docs/DEPLOY.md` bagian A.
 
 `load_postgres.py` idempoten: mengosongkan schema `mart` lalu mengisi ulang, tanpa menyentuh riwayat chat di schema `app`.
 
@@ -58,7 +58,10 @@ Isi `.env`:
 |---|---|---|
 | `DATABASE_URL` | untuk chatbot | sama dengan langkah 2 |
 | `LLM_PROVIDER` | untuk chatbot | `openai` atau `deepseek` |
-| `OPENAI_API_KEY`, `OPENAI_MODEL` | bila `openai` | model chat yang mendukung tool calling di akun Anda |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | bila `openai` | `OPENAI_MODEL` = **ID API persis** dari halaman Models OpenAI (bukan nama pemasaran), harus mendukung Chat Completions + tool calling |
+| `LLM_REASONING_EFFORT` | untuk gpt-5.x | isi `none`; tanpa ini model reasoning menolak tool di Chat Completions |
+| `LLM_TEMPERATURE` | opsional | kosongkan untuk model reasoning yang menolak `temperature`; isi `0` bila model mendukung |
+| `OPENAI_BASE_URL` | opsional | gateway kompatibel OpenAI |
 | `DEEPSEEK_API_KEY` | bila `deepseek` | `DEEPSEEK_MODEL` default `deepseek-chat`, `DEEPSEEK_BASE_URL` default `https://api.deepseek.com` |
 
 Ganti provider cukup dengan mengubah `LLM_PROVIDER` lalu restart server.
@@ -75,13 +78,10 @@ Ganti provider cukup dengan mengubah `LLM_PROVIDER` lalu restart server.
 | `npm run lint` | ESLint |
 | `DATABASE_URL=... npm run test:tools` | uji semua tool semantic layer ke database (tanpa LLM) |
 
-## 4. Deploy (Vercel)
+## 4. Database online & deploy
 
-1. Push repo ke GitHub (pastikan `.gitignore` root aktif; cek `git status` tidak memuat `Pendaftaran/`, `Dataset…/`, `Reference/`, `.env`).
-2. Di Vercel: **New Project → import repo → Root Directory = `web`**.
-3. Tambahkan Environment Variables yang sama dengan `.env` (Production + Preview).
-4. Deploy. Dashboard bersifat statis; `/api/chat*` berjalan sebagai serverless function.
-5. Uji di jendela incognito: buka `/ringkasan`, lalu Tanya Data → “RS mana paling tertekan saat musim asap 2026?”.
+Langkah lengkap (Supabase + Vercel, env, uji incognito, biaya, troubleshooting): **[`docs/DEPLOY.md`](DEPLOY.md)**.
+Tanpa Python, datamart bisa dimuat dengan `DATABASE_URL=... bash datamart/load_psql.sh`.
 
 ## 5. Troubleshooting
 
@@ -90,4 +90,7 @@ Ganti provider cukup dengan mengubah `LLM_PROVIDER` lalu restart server.
 | “Data gagal dimuat” | `web/public/data/dashboard.json` tidak ada | jalankan `06_export_dashboard.py` |
 | Tanya Data: “DATABASE_URL belum diatur” | env kosong | isi `.env`, restart |
 | Tanya Data: “OPENAI_API_KEY belum diatur” | provider `openai` tanpa kunci | isi kunci atau ganti `LLM_PROVIDER=deepseek` |
+| Galat `model_not_found` / 404 | `OPENAI_MODEL` bukan ID API yang tersedia di akun | salin ID persis dari halaman Models |
+| Galat `Function tools with reasoning_effort are not supported` | model reasoning | `LLM_REASONING_EFFORT=none` |
+| Galat `Unsupported parameter: 'temperature'` | model hanya menerima suhu default | kosongkan `LLM_TEMPERATURE` |
 | `relation "mart.v_station_month" does not exist` | datamart belum dimuat | langkah 2 |

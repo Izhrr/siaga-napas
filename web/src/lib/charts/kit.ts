@@ -48,7 +48,12 @@ export function combo(box: HTMLElement, label: string, cats: string[], bars: { v
     if (cats.length <= 14) o.line.forEach((v, i) => { if (v != null) el("circle", { cx: cx(i), cy: y(v), r: 2.8, fill: cssVar("--card"), stroke: cssVar("--trend"), "stroke-width": 1.6 }, svg); });
   }
   const ax = el("g", { class: "axis" }, svg);
-  cats.forEach((c, i) => { const lb = o.xl ? o.xl(c, i) : c; if (lb) text(ax, cx(i), h - 5, lb, "", "middle"); });
+  let lastRight = -Infinity; // lewati label yang akan bertabrakan dengan label sebelumnya
+  cats.forEach((c, i) => {
+    const lb = o.xl ? o.xl(c, i) : c; if (!lb) return;
+    const half = (lb.length * 5.8) / 2; if (cx(i) - half < lastRight + 4) return;
+    text(ax, cx(i), h - 5, lb, "", "middle"); lastRight = cx(i) + half;
+  });
   cats.forEach((_, i) => { const hit = el("rect", { x: m.l + bw * i, y: m.t, width: bw, height: h - m.t - m.b, fill: "transparent" }, svg); hover(hit, () => o.tip(i)); });
 }
 
@@ -87,15 +92,15 @@ export interface Pt { x: number; y: number; color: string; on?: boolean; r?: num
 export function scatter(box: HTMLElement, label: string, pts: Pt[], o: { x0: number; x1: number; y0: number; y1: number; xt: number[]; yt: number[]; xlog?: boolean; ylog?: boolean;
   xf?: (v: number) => string; yf?: (v: number) => string; xl: string; yl: string; vref?: { v: number; cls: string }[]; quads?: { x: "l" | "r"; y: "t" | "b"; t: string }[]; fit?: boolean }) {
   const { svg, w, h } = frame(box, label);
-  const m = { l: 38, r: 12, t: 16, b: 26 };
+  const m = { l: 40, r: 14, t: 24, b: 36 }; // judul sumbu di baris sendiri: y di atas plot, x di bawah angka sumbu
   const sx = o.xlog ? Math.log : (v: number) => v, sy = o.ylog ? Math.log : (v: number) => v;
   const X = (v: number) => lin(sx(o.x0), sx(o.x1), m.l, w - m.r)(sx(v)), Y = (v: number) => lin(sy(o.y0), sy(o.y1), h - m.b, m.t)(sy(v));
   yGrid(svg, Y, o.yt, m.l, w - m.r, o.yf);
   const ax = el("g", { class: "axis" }, svg);
-  o.xt.forEach((t) => text(ax, X(t), h - m.b + 13, (o.xf ?? fmt)(t), "", "middle"));
-  text(ax, w - m.r, h - 2, o.xl, "", "end"); text(ax, m.l, m.t - 6, o.yl);
+  o.xt.forEach((t) => { const lb = (o.xf ?? fmt)(t), half = (lb.length * 5.8) / 2; const anchor = X(t) + half > w ? "end" : X(t) - half < 0 ? "start" : "middle"; text(ax, X(t), h - m.b + 14, lb, "", anchor); });
+  text(ax, w - m.r, h - 3, o.xl, "", "end"); text(ax, m.l - 30, 11, o.yl);
   (o.vref ?? []).forEach((r) => el("line", { x1: X(r.v), x2: X(r.v), y1: m.t, y2: h - m.b, class: r.cls }, svg));
-  (o.quads ?? []).forEach((q) => text(svg, q.x === "r" ? w - m.r - 4 : m.l + 6, q.y === "t" ? m.t + 10 : h - m.b - 6, q.t, "lab", q.x === "r" ? "end" : "start", { opacity: 0.7 }));
+  (o.quads ?? []).forEach((q) => text(svg, q.x === "r" ? w - m.r - 4 : m.l + 6, q.y === "t" ? m.t + 12 : h - m.b - 6, q.t, "lab halo", q.x === "r" ? "end" : "start", { opacity: 0.75 }));
   if (o.fit) {
     const P = pts.filter((p) => p.on !== false);
     if (P.length > 2) {
@@ -117,7 +122,7 @@ export function scatter(box: HTMLElement, label: string, pts: Pt[], o: { x0: num
       .map(([a, b]) => ({ x: a, y: b, w: lw, h: 12 }))
       .filter((c) => c.x > m.l && c.x + c.w < w - 2 && c.y > 0 && c.y + c.h < h - m.b)
       .find((c) => !clash(c));
-    if (c) { placed.push(c); text(svg, c.x, c.y + 10, p.label, "lab"); }
+    if (c) { placed.push(c); text(svg, c.x, c.y + 10, p.label, "lab-b halo"); }
   });
 }
 
@@ -129,4 +134,18 @@ export function mapBase(box: HTMLElement, label: string, id: string) {
   el("rect", { width: 6, height: 6, fill: cssVar("--land") }, pat);
   el("line", { x1: 0, y1: 0, x2: 0, y2: 6, stroke: cssVar("--hatch"), "stroke-width": 2.2 }, pat);
   return { svg, hatch: `url(#hatch-${id})` };
+}
+
+/** Label peta tanpa tabrakan: coba kanan-atas, kanan-bawah, kiri-atas, kiri-bawah; lewati bila semua bertabrakan. */
+export function mapLabels(svg: SVGSVGElement, items: { x: number; y: number; text: string }[], size = 21) {
+  type B = { x: number; y: number; w: number; h: number };
+  const placed: B[] = [], clash = (a: B) => placed.some((b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
+  for (const it of items) {
+    const w = it.text.length * size * 0.62 + 6, h = size * 1.3; // estimasi lebar teks tebal + halo
+    const c = ([[it.x + 9, it.y - 9 - h], [it.x + 9, it.y + 9], [it.x - 9 - w, it.y - 9 - h], [it.x - 9 - w, it.y + 9]] as [number, number][])
+      .map(([x, y]) => ({ x, y, w, h })).filter((b) => b.x > 0 && b.x + b.w < 1035).find((b) => !clash(b));
+    if (!c) continue;
+    placed.push(c);
+    text(svg, c.x, c.y + h * 0.8, it.text, "lab-b halo", "start", { style: `font-size:${size}px` });
+  }
 }

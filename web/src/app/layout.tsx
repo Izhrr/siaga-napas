@@ -6,8 +6,8 @@ import "./globals.css";
 const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], style: ["normal", "italic"] });
 
 export const metadata: Metadata = {
-  title: "JERNIH · Dashboard Udara & Kesehatan",
-  description: "Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi: PM2.5 dari 27 stasiun AQMS dan rawat inap di 27 RS rujukan.",
+  title: "SIAGA NAPAS · Dashboard Udara & Kesehatan",
+  description: "SIAGA NAPAS: Sistem Intelijen Antisipasi Gangguan Napas. PM2.5 dari 27 stasiun AQMS dan rawat inap di 27 RS rujukan.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

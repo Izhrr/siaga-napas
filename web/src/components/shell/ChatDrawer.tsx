@@ -1,6 +1,7 @@
 "use client";
+import { CloseButton } from "../Icons";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { fmt } from "@/lib/format";
+import { fmt, nice } from "@/lib/format";
 import type { Artifact, ChatMessage, ChatResponse, ConversationSummary } from "@/lib/chat-types";
 
 export interface ChatHandle { open: () => void }
@@ -23,15 +24,24 @@ function ArtifactView({ a }: { a: Artifact }) {
     );
   }
   if (a.kind === "lines") {
-    const W = 380, H = 130, pad = 26, vals = a.series.flatMap((s) => s.values.filter((v): v is number => v != null)), max = Math.max(...vals, 1);
-    const x = (i: number) => pad + (i / Math.max(1, a.x.length - 1)) * (W - pad * 2), y = (v: number) => H - 18 - (v / max) * (H - 30);
+    // Sumbu y dengan 3 garis bantu + label nilai di ujung tiap seri agar grafik terbaca tanpa hover
+    const W = 380, H = 150, L = 34, Rm = 54, T = 10, B = 20;
+    const vals = a.series.flatMap((s) => s.values.filter((v): v is number => v != null));
+    const top = nice(Math.max(...vals, 1) * 1.08);
+    const x = (i: number) => L + (i / Math.max(1, a.x.length - 1)) * (W - L - Rm), y = (v: number) => H - B - (v / top) * (H - T - B);
     const colors = ["var(--bar)", "var(--trend)", "var(--a-kronis)", "var(--a-bersih)"];
+    const step = Math.ceil(a.x.length / 6);
+    const ends = a.series.map((s, k) => { const i = s.values.map((v, j) => (v == null ? -1 : j)).filter((j) => j >= 0).pop() ?? 0; return { k, y: y(s.values[i] ?? 0), v: s.values[i] }; })
+      .sort((p, q) => p.y - q.y).map((e, i, arr) => { if (i && e.y - arr[i - 1].y < 12) e.y = arr[i - 1].y + 12; return e; });
     return (
       <figure style={{ margin: "4px 0 6px" }}>
         <figcaption className="meta" style={{ fontWeight: 700 }}>{a.title} ({a.unit})</figcaption>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto" }} role="img" aria-label={a.title}>
+          {[0, top / 2, top].map((t) => <g key={t}><line x1={L} x2={W - Rm} y1={y(t)} y2={y(t)} stroke="var(--line)" /><text x={L - 5} y={y(t) + 3} fontSize={9} textAnchor="end" fill="var(--muted)">{fmt(t)}</text></g>)}
           {a.series.map((s, k) => <path key={s.name} fill="none" stroke={colors[k % 4]} strokeWidth={2} d={s.values.map((v, i) => (v == null ? "" : `${i && s.values[i - 1] != null ? "L" : "M"}${x(i)},${y(v)}`)).join("")} />)}
-          {a.x.map((l, i) => (i % Math.ceil(a.x.length / 6) === 0 ? <text key={l} x={x(i)} y={H - 4} fontSize={9} textAnchor="middle" fill="var(--muted)">{l}</text> : null))}
+          {a.series.map((s, k) => s.values.map((v, i) => (v == null || a.x.length > 12 ? null : <circle key={`${k}-${i}`} cx={x(i)} cy={y(v)} r={2.6} fill="var(--card)" stroke={colors[k % 4]} strokeWidth={1.6} />)))}
+          {ends.map((e) => <text key={e.k} x={W - Rm + 5} y={e.y + 3} fontSize={10} fontWeight={700} fill="var(--ink)">{fmt(e.v, (e.v ?? 0) < 100 ? 1 : 0)}</text>)}
+          {a.x.map((l, i) => (i % step === 0 || i === a.x.length - 1 ? <text key={l} x={x(i)} y={H - 5} fontSize={9} textAnchor="middle" fill="var(--muted)">{l}</text> : null))}
         </svg>
         <div className="legend" style={{ margin: 0 }}>{a.series.map((s, k) => <span key={s.name}><i className="sw ln" style={{ background: colors[k % 4] }} />{s.name}</span>)}</div>
       </figure>
@@ -100,8 +110,8 @@ export const ChatDrawer = forwardRef<ChatHandle, { page: string }>(function Chat
   return (
     <aside id="chat-drawer" className={`drawer${open ? " open" : ""}`} aria-label="Tanya Data" aria-hidden={!open} inert={!open}>
       <div className="dr-h">
-        <div><h2>Tanya Data · Asisten AI</h2><small>Jawaban dihitung dari datamart JERNIH, lengkap dengan grafik</small></div>
-        <button className="x" type="button" aria-label="Tutup Tanya Data" onClick={close}>×</button>
+        <div><h2>Tanya Data, Asisten AI</h2><small>Jawaban dihitung dari datamart SIAGA NAPAS, lengkap dengan grafik</small></div>
+        <CloseButton label="Tutup Tanya Data" onClick={close} />
       </div>
       <div className="dr-tools">
         <button className="chip" type="button" onClick={() => { setConv(undefined); setMsgs([]); }}>+ Percakapan baru</button>

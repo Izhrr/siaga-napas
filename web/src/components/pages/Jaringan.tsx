@@ -23,7 +23,7 @@ export function Jaringan() {
   return (
     <>
       <Card area="1 / 1 / 2 / 11" title="Cakupan Stasiun per Provinsi" how="cover" sub="Status stasiun di tiap provinsi"
-        legend={`<span><i class="sw" style="background:var(--s1)"></i>Semua stasiun layak</span><span><i class="sw" style="background:var(--s3)"></i>Ada stasiun bermasalah</span><span>${HATCH_SW}Tanpa stasiun</span><span><i class="sw dot" style="background:var(--bar)"></i>Stasiun tidak layak</span>`}
+        legend={`<span><i class="sw" style="background:var(--s1)"></i>Semua stasiun layak</span><span><i class="sw" style="background:var(--s3)"></i>Ada stasiun bermasalah</span><span>${HATCH_SW}Tanpa stasiun</span><span><i class="sw dot" style="background:var(--ink)"></i>Stasiun layak</span><span><i class="sw dot" style="background:var(--bar)"></i>Stasiun tidak layak</span>`}
         insight="13 provinsi tanpa stasiun, termasuk seluruh Nusa Tenggara dan Maluku; dua stasiun Papua berjarak lebih dari 1.200 km.">
         <Chart deps={[c]} draw={(box) => {
           const { svg, hatch } = mapBase(box, "Cakupan stasiun per provinsi", "cover");

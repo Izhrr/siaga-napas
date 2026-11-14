@@ -13,10 +13,10 @@ export function provider() {
   }
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY belum diatur");
   if (!process.env.OPENAI_MODEL) throw new Error("OPENAI_MODEL belum diatur");
-  return { name: "openai", model: process.env.OPENAI_MODEL, client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) };
+  return { name: "openai", model: process.env.OPENAI_MODEL, client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: process.env.OPENAI_BASE_URL || undefined }) };
 }
 
-const SYSTEM = (catalog: string, page?: string) => `Kamu adalah "Tanya Data", asisten AI dashboard JERNIH (Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi).
+const SYSTEM = (catalog: string, page?: string) => `Kamu adalah "Tanya Data", asisten AI dashboard SIAGA NAPAS (Sistem Intelijen Antisipasi Gangguan Napas).
 Data: PM2.5 dan polutan dari 27 stasiun AQMS (Jan 2024 – 14 Okt 2026) dan rawat inap harian 27 RS rujukan yang berpasangan dengan stasiun. Data sintetis kompetisi.
 Aturan:
 1. Setiap angka di jawaban HARUS berasal dari hasil tool. Jangan menebak atau memakai pengetahuan luar.
@@ -37,7 +37,16 @@ export async function answer(question: string, history: { role: "user" | "assist
   const calls: ToolCall[] = []; let artifact: Artifact | null = null; let refused = false; const numbers: number[] = [];
   const usage = { prompt: 0, completion: 0 };
   for (let step = 0; step < 5; step++) {
-    const res = await p.client.chat.completions.create({ model: p.model, messages, tools, temperature: 0 });
+    // LLM_TEMPERATURE kosong = tidak dikirim (sebagian model terbaru hanya menerima nilai default)
+    const temp = process.env.LLM_TEMPERATURE;
+    // LLM_REASONING_EFFORT: model reasoning (mis. gpt-5.6-terra) hanya menerima tool di Chat Completions bila diisi "none"
+    // Default "none" untuk seri gpt-5.x (wajib agar tool diterima di Chat Completions); env tetap bisa menimpa
+    const effort = process.env.LLM_REASONING_EFFORT || (p.name === "openai" && /^gpt-5/.test(p.model) ? "none" : "");
+    const res = await p.client.chat.completions.create({
+      model: p.model, messages, tools,
+      ...(temp !== undefined && temp !== "" ? { temperature: Number(temp) } : {}),
+      ...(effort ? { reasoning_effort: effort as never } : {}),
+    });
     usage.prompt += res.usage?.prompt_tokens ?? 0; usage.completion += res.usage?.completion_tokens ?? 0;
     const msg = res.choices[0].message;
     const toolCalls = (msg.tool_calls ?? []).filter((c) => c.type === "function");
@@ -69,8 +78,11 @@ function collectNumbers(rows: Record<string, unknown>[], out: number[]) {
 
 /** Number guard: share of figures in the answer that trace to a tool value (or a simple derivation of one). */
 export function traceFigures(text: string, values: number[]): { checked: number; traced: number } {
-  const found = [...text.matchAll(/(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?/g)].map((m) => Number(m[1].replace(/\./g, "") + (m[2] ? "." + m[2] : "")));
-  const nums = found.filter((n) => !(n >= 2000 && n <= 2035) && n > 12); // tahun dan angka kecil (bulan, jam) tidak diperiksa
+  // Tanggal ("14 Oktober") dan konstanta domain (27 stasiun, per 100 TT, ambang 15/25/55) bukan hasil kueri, jadi tidak diperiksa
+  const clean = text.replace(/\b\d{1,2}\s+(Jan\w*|Feb\w*|Mar\w*|Apr\w*|Mei|Jun\w*|Jul\w*|Agu\w*|Sep\w*|Okt\w*|Nov\w*|Des\w*)/gi, "");
+  const CONST = new Set([15, 25, 27, 55, 100]);
+  const found = [...clean.matchAll(/(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?/g)].map((m) => Number(m[1].replace(/\./g, "") + (m[2] ? "." + m[2] : "")));
+  const nums = found.filter((n) => !(n >= 2000 && n <= 2035) && n > 12 && !CONST.has(n)); // tahun dan angka kecil (bulan, jam) tidak diperiksa
   const cands = new Set<number>();
   values.forEach((a) => { cands.add(a); cands.add(a * 100); cands.add(a / 1000); });
   for (let i = 0; i < Math.min(values.length, 120); i++) for (let j = 0; j < Math.min(values.length, 120); j++) if (values[j]) { cands.add((values[i] / values[j] - 1) * 100); cands.add(values[i] / values[j]); }

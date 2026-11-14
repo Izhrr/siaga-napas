@@ -21,11 +21,11 @@ export async function POST(req: Request) {
     await saveMessage(conversationId, { id: crypto.randomUUID(), role: "user", content: q });
     let msg: ChatMessage & { promptTokens?: number; completionTokens?: number };
     if (INJECTION.test(q)) {
-      msg = { id: crypto.randomUUID(), role: "assistant", route: "refused", content: "Pertanyaan ini tidak bisa diproses. Tanya Data hanya menjawab pertanyaan tentang udara dan rawat inap di dataset JERNIH." };
+      msg = { id: crypto.randomUUID(), role: "assistant", route: "refused", content: "Pertanyaan ini tidak bisa diproses. Tanya Data hanya menjawab pertanyaan tentang udara dan rawat inap di dataset SIAGA NAPAS." };
     } else {
       const r = await answer(q, history, body.page);
       const guard = traceFigures(r.text, r.numbers);
-      const note = guard.checked ? `\n\n${guard.traced}/${guard.checked} angka ditelusuri ke hasil kueri.` : "";
+      const note = guard.checked && !r.refused ? `\n\n${guard.traced}/${guard.checked} angka ditelusuri ke hasil kueri.` : "";
       msg = { id: crypto.randomUUID(), role: "assistant", route: r.refused ? "refused" : "llm", content: r.text + note, artifact: r.artifact, toolCalls: r.calls,
         provider: r.provider, model: r.model, promptTokens: r.usage.prompt, completionTokens: r.usage.completion };
     }

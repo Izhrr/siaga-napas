@@ -1,0 +1,283 @@
+{
+ "ringkasan": {
+  "w": 1440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "filter",
+    "x": 0.97,
+    "y": 31.37
+   },
+   {
+    "key": "crit",
+    "x": 16.81,
+    "y": 5.71
+   },
+   {
+    "key": "kpi",
+    "x": 16.81,
+    "y": 17.72
+   },
+   {
+    "key": "Persebaran Beban ISPA per Provinsi",
+    "x": 16.81,
+    "y": 29.64
+   },
+   {
+    "key": "Tren Bulanan Kasus Berlebih",
+    "x": 62.87,
+    "y": 29.64
+   },
+   {
+    "key": "Kasus Berlebih per Level PM2.5",
+    "x": 16.81,
+    "y": 64.71
+   },
+   {
+    "key": "Peringkat Provinsi",
+    "x": 53.66,
+    "y": 64.71
+   },
+   {
+    "key": "ai",
+    "x": 0.97,
+    "y": 93.78
+   }
+  ]
+ },
+ "waktu": {
+  "w": 1440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "filter",
+    "x": 0.97,
+    "y": 31.37
+   },
+   {
+    "key": "crit",
+    "x": 16.81,
+    "y": 5.71
+   },
+   {
+    "key": "kpi",
+    "x": 16.81,
+    "y": 17.31
+   },
+   {
+    "key": "Kalender PM2.5 per Wilayah",
+    "x": 16.81,
+    "y": 29.23
+   },
+   {
+    "key": "Pola Musiman",
+    "x": 49.05,
+    "y": 29.23
+   },
+   {
+    "key": "Musim Asap per Tahun",
+    "x": 49.05,
+    "y": 64.5
+   },
+   {
+    "key": "Pola Jam Harian",
+    "x": 76.69,
+    "y": 64.5
+   },
+   {
+    "key": "ai",
+    "x": 0.97,
+    "y": 93.78
+   }
+  ]
+ },
+ "pemicu": {
+  "w": 1440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "filter",
+    "x": 0.97,
+    "y": 31.37
+   },
+   {
+    "key": "crit",
+    "x": 16.81,
+    "y": 5.71
+   },
+   {
+    "key": "kpi",
+    "x": 16.81,
+    "y": 17.72
+   },
+   {
+    "key": "Peta Tipe Wilayah",
+    "x": 16.81,
+    "y": 29.64
+   },
+   {
+    "key": "Lalu Lintas vs PM2.5",
+    "x": 62.87,
+    "y": 29.64
+   },
+   {
+    "key": "Level per Tipe Wilayah",
+    "x": 16.81,
+    "y": 64.71
+   },
+   {
+    "key": "Faktor Paling Berpengaruh",
+    "x": 44.44,
+    "y": 64.71
+   },
+   {
+    "key": "Arah Angin",
+    "x": 72.08,
+    "y": 64.71
+   },
+   {
+    "key": "ai",
+    "x": 0.97,
+    "y": 93.78
+   }
+  ]
+ },
+ "dampak": {
+  "w": 1440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "filter",
+    "x": 0.97,
+    "y": 31.37
+   },
+   {
+    "key": "crit",
+    "x": 16.81,
+    "y": 5.71
+   },
+   {
+    "key": "kpi",
+    "x": 16.81,
+    "y": 16.99
+   },
+   {
+    "key": "Kurva Risiko Rawat Inap",
+    "x": 16.81,
+    "y": 28.91
+   },
+   {
+    "key": "Kapan Pasien Datang",
+    "x": 62.87,
+    "y": 28.91
+   },
+   {
+    "key": "Kerentanan per Penyakit",
+    "x": 16.81,
+    "y": 64.34
+   },
+   {
+    "key": "Tekanan Rumah Sakit",
+    "x": 44.44,
+    "y": 64.34
+   },
+   {
+    "key": "Kasus Berlebih per Tahun",
+    "x": 72.08,
+    "y": 64.34
+   },
+   {
+    "key": "ai",
+    "x": 0.97,
+    "y": 93.78
+   }
+  ]
+ },
+ "jaringan": {
+  "w": 1440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "filter",
+    "x": 0.97,
+    "y": 31.37
+   },
+   {
+    "key": "crit",
+    "x": 16.81,
+    "y": 5.71
+   },
+   {
+    "key": "kpi",
+    "x": 16.81,
+    "y": 17.31
+   },
+   {
+    "key": "Cakupan Stasiun per Provinsi",
+    "x": 16.81,
+    "y": 29.23
+   },
+   {
+    "key": "IKU \"Baik\", PM2.5 Buruk",
+    "x": 62.87,
+    "y": 29.23
+   },
+   {
+    "key": "Rencana Aksi Jaringan",
+    "x": 16.81,
+    "y": 64.5
+   },
+   {
+    "key": "Kelayakan Data per Stasiun",
+    "x": 62.87,
+    "y": 64.5
+   },
+   {
+    "key": "ai",
+    "x": 0.97,
+    "y": 93.78
+   }
+  ]
+ },
+ "tanya": {
+  "w": 440,
+  "h": 900,
+  "markers": [
+   {
+    "key": "hist",
+    "x": 0.68,
+    "y": 8.36
+   },
+   {
+    "key": "q",
+    "x": 0.68,
+    "y": 13.78
+   },
+   {
+    "key": "ans",
+    "x": 0.68,
+    "y": 22.7
+   },
+   {
+    "key": "chart",
+    "x": 0.68,
+    "y": 31.04
+   },
+   {
+    "key": "meta",
+    "x": 99.32,
+    "y": 30.01
+   },
+   {
+    "key": "sug",
+    "x": 0.68,
+    "y": 88.11
+   },
+   {
+    "key": "input",
+    "x": 0.68,
+    "y": 96.94
+   }
+  ]
+ }
+}

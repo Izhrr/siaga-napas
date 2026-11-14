@@ -9,6 +9,7 @@ import { ARCH_LABEL, aggCtx } from "@/lib/select";
 import { ARCHS, useUI } from "@/lib/store";
 
 const AC = (a: string) => cssVar(`--a-${a === "tanpa-data" ? "none" : a}`);
+const ARCH_LABELS = new Set(["KTG-01", "PKN-01", "KTB-01", "SM2-01", "PLB-01", "JKT-02", "MDN-01", "BGR-02", "IDP-01"]); // label tetap; stasiun lain lewat tooltip
 const SEC = ["U", "TL", "T", "Tg", "S", "BD", "B", "BL"], SEC_N = ["utara", "timur laut", "timur", "tenggara", "selatan", "barat daya", "barat", "barat laut"];
 
 export function Pemicu() {
@@ -25,10 +26,10 @@ export function Pemicu() {
         legend={ARCHS.map((a) => `<span><i class="sw dot" style="background:var(--a-${a})"></i>${ARCH_LABEL[a]}</span>`).join("") + '<span><i class="sw ln" style="background:var(--thr)"></i>ambang 25</span>'}
         insight='KTG-01 berlabel "Urban Background" tapi lonjakannya 7×; Jakarta dan Medan kotor tanpa musim.'>
         <Chart deps={[c]} draw={(box) => scatter(box, "Peta tipe wilayah", c.d.stations.filter((s) => s.off).map((s) => ({
-          x: s.off!, y: s.mult!, color: AC(s.arch), on: on.has(s.code), r: 6, label: s.code,
+          x: s.off!, y: s.mult!, color: AC(s.arch), on: on.has(s.code), r: 6.5, label: ARCH_LABELS.has(s.code) ? (s.code === "KTG-01" ? "KTG-01 & 02" : s.code) : "",
           tip: `<b>${s.code} · ${s.kota}</b>${row("Tipe wilayah", ARCH_LABEL[s.arch])}${row("PM2.5 Jan–Jun", fmt(s.off, 1))}${row("Lonjakan Agu–Okt", fmt(s.mult, 1) + "×")}${row("Eskalasi 2024→2026", fmt(s.esc, 1) + "×")}`,
         })), { xlog: true, x0: 8, x1: 70, xt: [10, 15, 25, 40, 60], ylog: true, y0: 0.9, y1: 9, yt: [1, 2, 4, 8], yf: (v) => v + "×", xl: "PM2.5 di luar musim asap, µg/m³ →", yl: "↑ lonjakan saat musim asap",
-          vref: [{ v: 25, cls: "thr25" }], quads: [{ x: "l", y: "t", t: "Bersih, lalu meledak saat asap" }, { x: "r", y: "t", t: "Kotor dan melonjak (beban ganda)" }] })} />
+          vref: [{ v: 25, cls: "thr25" }] })} />
       </Card>
 
       <Card area="1 / 11 / 2 / 19" title="Lalu Lintas vs PM2.5" how="traffic" sub="Kendaraan per jam vs PM2.5 dasar"

@@ -1,4 +1,4 @@
-# CLAUDE.md · Konteks proyek JERNIH (Gelar Rasa 2026, Dashboard Analysis)
+# CLAUDE.md · Konteks proyek SIAGA NAPAS (Gelar Rasa 2026, Dashboard Analysis)
 
 Baca file ini dulu, lalu `docs/EDA.md`, `docs/BRAINSTORM.md`, dan `docs/SETUP.md`. Bahasa kerja dengan pemilik: **Indonesia**.
 
@@ -6,7 +6,7 @@ Baca file ini dulu, lalu `docs/EDA.md`, `docs/BRAINSTORM.md`, dan `docs/SETUP.md
 Lomba Dashboard Analysis Gelar Rasa 2026 (guidebook di `Guidebook/`). Data sintetis: PM2.5 & polutan per jam dari 27 stasiun AQMS + rawat inap harian 27 RS (1:1 dengan stasiun), Jan 2024 – 14 Okt 2026. **Dilarang memakai data eksternal** (basemap provinsi hanya latar visual).
 Rubrik: dashboard 70 (kualitas informasi 25, visualisasi 20, fungsionalitas & interaktivitas 25) + laporan 30. Selalu cek keputusan terhadap rubrik.
 
-Nama dashboard: **JERNIH = Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi**. Pengguna primer: tim surveilans kesehatan lingkungan (Kemenkes/Dinkes); sekunder: KLH/DLH.
+Nama dashboard: **SIAGA NAPAS = Sistem Intelijen Antisipasi Gangguan Napas** (SIAGA = status kesiapsiagaan surveilans, NAPAS = dampak yang dijaga; nama ketiga setelah JERNIH dan SIGAP, keduanya ditolak pemilik karena terlalu umum). Nama ada di `web/src/lib/brand.ts`. Nama DB lokal (`jernih`), key localStorage (`jernih-theme`), dan folder repo tetap memakai nama lama; tidak perlu diubah. Pengguna primer: tim surveilans kesehatan lingkungan (Kemenkes/Dinkes); sekunder: KLH/DLH.
 
 ## 2. Status (14 Nov 2026)
 | Tahap | Status |
@@ -15,10 +15,10 @@ Nama dashboard: **JERNIH = Jejak Emisi, Risiko Napas, dan Imbas Hospitalisasi**.
 | Datamart PostgreSQL (`datamart/`) | selesai, dimuat ke DB lokal `jernih` |
 | Mock HTML (`mockup/`) | selesai, **sudah digantikan** oleh `web/` (jangan dikembangkan lagi) |
 | App Next.js (`web/`): 5 halaman, filter, Poin Kunci, Panduan, mode gelap | selesai, lolos build/lint/typecheck, dicek 1366/1440/1920/ponsel |
-| Chatbot Tanya Data (API + semantic layer + riwayat) | kode selesai; tool SQL teruji; **jalur LLM belum diuji** (menunggu `.env` pemilik) |
+| Chatbot Tanya Data (API + semantic layer + riwayat) | **teruji 14 Nov** dengan `gpt-5.6-terra` (3 pertanyaan: peringkat RS, tren 2 kota, di luar cakupan → semua benar). Butuh `LLM_REASONING_EFFORT=none` + ID model tanpa awalan `openai.`. Biaya uji: 18.988 token input + 332 output ≈ US$0,042 (≈ US$0,014/pertanyaan; tarif $2 / $12 per 1 juta token). Screenshot di `docs/screenshots/tanya-data-*.png` |
 | Laporan lomba (PDF, 30 poin) | **belum** (dikerjakan terakhir; lihat guidebook untuk template) |
 
-Berikutnya: iterasi tampilan langsung di `web/`, uji chatbot setelah `.env` diisi, lalu laporan.
+Repo GitHub: `origin` = Izhrr/jernih-gelarrasa (sudah dibuat pemilik). **Supabase: sudah dimuat & teruji 14 Nov** (project region **Tokyo ap-northeast-1** menurut host pooler; Vercel Function Region sebaiknya `hnd1`; 17 tabel, validasi 56354|16215; uji chat end-to-end OK, riwayat tersimpan di `app`). `web/.env` pemilik: `DATABASE_URL` = Transaction pooler (port 6543, sslmode=require), teruji; untuk perintah lokal pakai `node web/scripts/with-supabase.mjs session -- <cmd>` (memuat env tanpa mencetak rahasia). Vercel: belum; panduan di `docs/DEPLOY.md` (**Supabase** Singapura: Session pooler untuk memuat data, Transaction pooler untuk Vercel; Vercel root `web`; loader tanpa Python `datamart/load_psql.sh`, teruji). Berikutnya: deploy, lalu laporan.
 
 ## 3. Temuan inti (angka dari data, jangan diubah tanpa menjalankan ulang pipeline)
 - ~1/3 rawat inap ISPA balita (33%) & lansia (31%) berasosiasi dengan PM2.5 > 25 µg/m³ (56.354 kasus balita, 64.883 lansia).
@@ -33,7 +33,7 @@ Berikutnya: iterasi tampilan langsung di `web/`, uji chatbot setelah `.env` diis
 ```
 analysis/   01_clean → 02_daily → 03_health_model → 04_network_cluster → 06_export_dashboard → 07_build_datamart (Python, venv: analysis/.venv via uv)
 datamart/   schema.sql (schema mart + app), load_postgres.py (butuh env DATABASE_URL), data/*.csv|parquet
-web/        Next.js 16 (App Router, cacheComponents), React 19, Zustand, CSS token di src/app/globals.css
+web/        Next.js 16 (App Router, cacheComponents), React 19, Zustand, CSS murni dengan token di src/app/globals.css (Tailwind sengaja DIHAPUS: loader Tailwind-Turbopack membuat HMR CSS tertinggal satu versi)
 docs/       EDA, BRAINSTORM, PRD, FRONTEND, BACKEND, CHATBOT, DATAMART, SETUP, reference/egypt-extraction.md
 mockup/     mock HTML lama (referensi saja)
 assets/     geo/ (GeoJSON BAKOSURTANAL 34 provinsi), brand/
@@ -41,8 +41,10 @@ assets/     geo/ (GeoJSON BAKOSURTANAL 34 provinsi), brand/
 Tidak masuk git (lihat `.gitignore`): `Pendaftaran/` (KTM, data pribadi), `Dataset DA Gelar Rasa 2026/`, `Guidebook/`, `Reference/` (ada dokumen internal Paragon), `.env`.
 
 ## 5. Web app: peta kode
-- `src/components/shell/Shell.tsx`: kanvas desain **1440 px diskalakan** ke layar (min tinggi 790) → satu layar tanpa scroll; < 900 px = tata letak tumpuk. Header → banner Temuan Kritis → [KPI + grid grafik 18×2] + **kolom Poin Kunci & Aksi di kanan** (fokus utama).
-- `src/lib/content.ts`: judul, banner, KPI, poin kunci, teks tombol i (`HOW`). `src/lib/guide.ts`: isi Panduan (latar belakang, kenapa PM2.5, pemetaan pertanyaan booklet, alasan filter, istilah).
+- `src/components/shell/Shell.tsx`: kanvas desain **1440 px diskalakan** ke layar (min tinggi 790) → satu layar tanpa scroll; < 900 px = tata letak tumpuk. Header (judul, rentang data, Panduan, saklar tema ikon). **Tanya Data** = pil putih `.ai-dock` di bawah sidebar (versi melayang ditolak pemilik: menutupi grafik & efek berlebihan); efek minimal: kedip sekali saat dimuat, terangkat sedikit saat hover → **CriticalBanner** (Temuan Kritis + 4 angka Poin Kunci yang bisa diklik → dialog Poin Kunci & Aksi) → KPI → grid grafik 18×2. Klik provinsi di peta → `ProvinceDialog`. (Kolom Poin Kunci di kanan sudah dihapus: terlalu makan ruang.)
+- `src/lib/content.ts`: judul, banner, KPI, teks tombol i (`HOW`), dan `keyPoints()` = 4 poin kunci per halaman berbentuk `{fig, head, what, why, action, who, chart}`; angka dinamis mengikuti filter pada grain besar (periode, wilayah, kelompok, acuan), hasil model tetap statis. `chart` harus sama persis dengan judul kartu (dipakai tombol "Lihat grafik" yang menyorot kartu).
+- Panduan (`components/shell/Guide.tsx` + `lib/guide.ts`): 8 halaman bergaya dokumentasi Paragon (Gambaran umum, 5 cara membaca dengan screenshot berpenanda bernomor, Tanya Data AI, Istilah & metodologi). Screenshot + posisi penanda dibuat oleh `web/scripts/guide_shots.py` (→ `public/guide/*.jpg`, `src/lib/guide-shots.json`); **jalankan ulang setiap tata letak berubah**. Kunci penanda = `filter|crit|kpi|ai` atau judul kartu.
+- Ikon tombol (tutup, chevron, info) memakai SVG di `components/Icons.tsx`, bukan karakter teks, agar presisi di tengah.
 - `src/lib/select.ts`: agregasi grain stasiun × bulan (`agg`, `makeCtx`, `growth`). `src/lib/store.ts`: filter global (sessionStorage).
 - `src/lib/charts/core.ts` + `kit.ts`: grafik SVG imperatif (hbars, combo batang+garis, lines, scatter, mapBase). `src/components/Chart.tsx` menggambar ulang saat resize/tema/data.
 - `src/components/pages/*.tsx`: satu komponen per halaman (posisi kartu via `gridArea`).
@@ -56,7 +58,7 @@ cd web && npm run dev | npm run build | npm run lint | npm run typecheck
 DATABASE_URL=postgresql://$USER@localhost:5432/jernih npm run test:tools   # uji semua tool chatbot tanpa LLM
 DATABASE_URL=... analysis/.venv/bin/python datamart/load_postgres.py       # muat ulang datamart
 ```
-`.env` (dibuat sendiri oleh pemilik dari `web/.env.example`): `DATABASE_URL`, `LLM_PROVIDER` (openai|deepseek), `OPENAI_API_KEY`, `OPENAI_MODEL`, `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, `DEEPSEEK_BASE_URL`. **Jangan pernah membuka/membaca file `.env`**; untuk tes, berikan env lewat command line.
+`.env` (dibuat sendiri oleh pemilik dari `web/.env.example`): `DATABASE_URL`, `LLM_PROVIDER` (openai|deepseek), `LLM_TEMPERATURE` (kosong = tidak dikirim), `OPENAI_API_KEY`, `OPENAI_MODEL` (ID API persis, mis. `gpt-5.6-terra`), `LLM_REASONING_EFFORT` (`none` untuk seri gpt-5.x + tool), `OPENAI_BASE_URL` (opsional), `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, `DEEPSEEK_BASE_URL`. **Jangan pernah membuka/membaca file `.env`**; untuk tes, berikan env lewat command line.
 
 ## 7. Preferensi pemilik (wajib diikuti)
 - **Less is more**, value creation & mudah dipahami dalam 10 detik; satu layar desktop tanpa scroll; tidak ada elemen yang lewat batas; visibilitas & keterbacaan.
@@ -70,4 +72,5 @@ DATABASE_URL=... analysis/.venv/bin/python datamart/load_postgres.py       # mua
 - Commit/push hanya bila diminta; pemilik akan menyiapkan repo GitHub sendiri.
 
 ## 8. Verifikasi sebelum menyerahkan perubahan UI
+**Jangan `next build` ke `.next` saat dev server pemilik berjalan** (merusak watcher/HMR-nya). Pakai folder terpisah: `NEXT_DIST_DIR=.next-check npx next build` lalu `NEXT_DIST_DIR=.next-check npx next start -p 3100`; hapus `.next-check` sesudahnya.
 Build + lint + typecheck, lalu render di headless Chrome (Playwright Python di `analysis/.venv`, `channel="chrome"`) pada 1366×768, 1440×900, 1920×1080, 390×844 dan mode gelap; cek tidak ada teks SVG keluar viewBox, teks terpotong, kartu/sidebar overflow, overflow horizontal di ponsel, dan error console selain 404 logo.

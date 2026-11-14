@@ -1,14 +1,16 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
+import { BRAND } from "@/lib/brand";
 import { banner, keyPoints, kpis, PAGES, PAGE_ORDER } from "@/lib/content";
 import type { PageKey } from "@/lib/types";
 import { useCtx, useDataState, useTheme } from "../DataProvider";
 import { OrnamentDefs } from "../Ornaments";
 import { ChatDrawer, type ChatHandle } from "./ChatDrawer";
+import { CriticalBanner } from "./CriticalBanner";
 import { Guide, type GuideHandle } from "./Guide";
-import { KeyPoints } from "./KeyPoints";
 import { KpiRow } from "./KpiRow";
+import { ProvinceDialog } from "./ProvinceDialog";
 import { Sidebar } from "./Sidebar";
 
 /** Kanvas desain 1440 px diskalakan ke layar; tinggi mengikuti rasio layar (min 790). Di bawah 900 px: tata letak ponsel. */
@@ -26,6 +28,21 @@ function useFitStage(ref: React.RefObject<HTMLDivElement | null>) {
   }, [ref]);
 }
 
+/** Saklar tema: ikon matahari/bulan, role="switch" agar status terbaca pembaca layar. */
+function ThemeSwitch({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
+  return (
+    <button className="theme-sw" type="button" role="switch" aria-checked={dark} aria-label="Mode gelap" title={dark ? "Ganti ke mode terang" : "Ganti ke mode gelap"} onClick={onToggle}>
+      <span className="knob" aria-hidden="true">
+        {dark ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 13.2A9 9 0 1 1 10.8 3a7 7 0 0 0 10.2 10.2Z" /></svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg>
+        )}
+      </span>
+    </button>
+  );
+}
+
 export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const page = (PAGE_ORDER.find((p) => path?.startsWith(`/${p}`)) ?? "ringkasan") as PageKey;
@@ -36,7 +53,7 @@ export function Shell({ children }: { children: ReactNode }) {
   // Atribut tema diset SEBELUM state berubah, karena grafik (efek anak) membaca token CSS saat menggambar ulang.
   const applyTheme = (t: "light" | "dark") => { document.documentElement.dataset.theme = t; setTheme(t); };
   useEffect(() => { let t: "light" | "dark" = "light"; try { t = (localStorage.getItem("jernih-theme") as "light" | "dark" | null) ?? "light"; } catch {} document.documentElement.dataset.theme = t; setTheme(t); }, [setTheme]);
-  useEffect(() => { document.title = `JERNIH · ${PAGES[page].title}`; }, [page]);
+  useEffect(() => { document.title = `${BRAND.name} · ${PAGES[page].title}`; }, [page]);
   const toggleTheme = () => { const t = theme === "dark" ? "light" : "dark"; try { localStorage.setItem("jernih-theme", t); } catch {} applyTheme(t); };
 
   return (
@@ -47,25 +64,18 @@ export function Shell({ children }: { children: ReactNode }) {
         <main>
           <header className="top">
             <h1>{PAGES[page].title} <span>: {PAGES[page].sub}</span></h1>
-            <span className="stamp">Data s.d. 14 Okt 2026 · diperbarui bulanan</span>
+            <span className="stamp">{BRAND.dataRange}</span>
             <button className="btn" type="button" onClick={() => guide.current?.open(`g-${page}`)}>Panduan</button>
-            <button className="btn" type="button" onClick={toggleTheme}>{theme === "dark" ? "Mode terang" : "Mode gelap"}</button>
+            <ThemeSwitch dark={theme === "dark"} onToggle={toggleTheme} />
           </header>
           {state.status === "loading" && <div className="empty">Memuat data dashboard…</div>}
           {state.status === "error" && <div className="empty">Data gagal dimuat ({state.message}). Pastikan web/public/data/dashboard.json ada; jalankan analysis/06_export_dashboard.py.</div>}
           {ctx && (
             <>
-              <div className="banner" role="note">
-                <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><path d="M10 1 19 17H1Z" fill="var(--red)" /><path d="M10 6.5v5" stroke="#fff" strokeWidth="2" strokeLinecap="round" /><circle cx="10" cy="14.2" r="1.2" fill="#fff" /></svg>
-                <div dangerouslySetInnerHTML={{ __html: banner(page, ctx) }} />
-              </div>
-              <div className="body">
-                <div className="left">
-                  <KpiRow items={kpis(page, ctx)} />
-                  <div className="grid" key={page}>{children}</div>
-                </div>
-                <KeyPoints page={page} items={keyPoints(page, ctx)} ctx={ctx} />
-              </div>
+              <CriticalBanner page={page} headline={banner(page, ctx)} points={keyPoints(page, ctx)} />
+              <KpiRow items={kpis(page, ctx)} />
+              <div className="grid" key={page}>{children}</div>
+              <ProvinceDialog ctx={ctx} />
             </>
           )}
         </main>

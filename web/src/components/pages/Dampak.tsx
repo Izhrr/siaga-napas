@@ -31,13 +31,13 @@ export function Dampak() {
         insight={`dengan batas ${c.f.c0} µg/m³ ada ${fmt(a.ex)} kasus ISPA ${groupLabel(c.group)} berlebih. Geser slider untuk membandingkan skenario.`}>
         <Chart deps={[c]} draw={(box) => {
           const { svg, w, h } = frame(box, "Kurva risiko rawat inap");
-          const m = { l: 34, r: 84, t: 10, b: 22 }, x = lin(5, 300, m.l, w - m.r), y = lin(0.8, 6, h - m.b, m.t);
+          const m = { l: 34, r: 84, t: 22, b: 22 }, x = lin(5, 300, m.l, w - m.r), y = lin(0.8, 6, h - m.b, m.t);
           el("rect", { x: x(25), y: m.t, width: x(55) - x(25), height: h - m.t - m.b, fill: cssVar("--red-tint") }, svg);
-          text(svg, (x(25) + x(55)) / 2, m.t + 11, "lolos baku", "lab", "middle");
+          text(svg, (x(25) + x(55)) / 2, m.t - 7, "lolos baku", "lab", "middle");
           yGrid(svg, y, [1, 2, 3, 4, 5, 6], m.l, w - m.r, (v) => v + "×");
           const ax = el("g", { class: "axis" }, svg); [25, 55, 100, 150, 200, 250, 300].forEach((t) => text(ax, x(t), h - 7, t, "", "middle"));
           el("line", { x1: x(25), x2: x(25), y1: m.t, y2: h - m.b, class: "thr25" }, svg); el("line", { x1: x(55), x2: x(55), y1: m.t, y2: h - m.b, class: "std55" }, svg);
-          const c0 = +c.f.c0; el("line", { x1: x(c0), x2: x(c0), y1: m.t, y2: h - m.b, stroke: cssVar("--ink"), "stroke-width": 2 }, svg); text(svg, x(c0) + 5, h - m.b - 8, "batas " + c.f.c0, "lab-b halo");
+          const c0 = +c.f.c0; el("line", { x1: x(c0), x2: x(c0), y1: m.t, y2: h - m.b, stroke: cssVar("--ink"), "stroke-width": 2 }, svg); text(svg, Math.max(x(c0), x(55) + 4) + 5, m.t + 10, "batas skenario " + c.f.c0, "lab-b halo");
           const ser: [string, string, string, number][] = [["resp_admissions_under5", "ISPA balita", cssVar("--bar"), 2.6], ["resp_admissions_over60", "ISPA lansia", cssVar("--trend"), 2.2], ["cvd", "Jantung", cssVar("--bar-gray"), 2]];
           const ends: { y: number; n: string }[] = [];
           ser.forEach(([k, n, col, sw]) => { const P = c.d.curves[k]; drawLine(el("path", { d: P.map(([p, r], i) => (i ? "L" : "M") + x(p) + "," + y(r)).join(""), fill: "none", stroke: col, "stroke-width": sw }, svg)); ends.push({ y: y(P[P.length - 1][1]), n }); });

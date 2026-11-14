@@ -1,6 +1,6 @@
 # CHATBOT · Tanya Data
 
-Asisten AI yang menjawab pertanyaan bebas tentang udara dan rawat inap, **hanya dari datamart JERNIH**, lengkap dengan grafik. Arsitektur meniru Egypt Market Intelligence: *model bahasa boleh meminta data, tetapi tidak pernah mengambilnya sendiri*.
+Asisten AI yang menjawab pertanyaan bebas tentang udara dan rawat inap, **hanya dari datamart SIAGA NAPAS**, lengkap dengan grafik. Arsitektur meniru Egypt Market Intelligence: *model bahasa boleh meminta data, tetapi tidak pernah mengambilnya sendiri*.
 
 ## Alur
 ```
